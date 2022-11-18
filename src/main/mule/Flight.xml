@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="showAllFlights" doc:id="39ba83b6-ae43-405d-a341-b59af6a35b11" >
+		<http:request method="GET" doc:name="showAllFlights" doc:id="5cf4aaf3-ee22-47e4-aa28-318d68c6b45a" config-ref="HTTP_Request_configuration" path="/flight/showAllFlights"/>
+	</sub-flow>
+	<sub-flow name="showFlightById" doc:id="b4940c5c-16bf-429c-91cd-fd8ff121277c" >
+		<try doc:name="Try" doc:id="d0759153-c388-40b2-9d73-2e1076a9285a" >
+			<set-variable value="#[vars.flightCode]" doc:name="Set Variable" doc:id="d53b03e4-1062-4ddb-b070-dbcaa5d1e2e5" variableName="data"/>
+			<validation:is-not-null doc:name="Id not null" doc:id="d34637c2-2908-4632-8895-d3a5761c2904" value="#[vars.flightNumber]">
+				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
+			</validation:is-not-null>
+			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="69777c04-79e6-4c8b-b168-ada4c488c36f" value="#[vars.flightNumber]">
+				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+			</validation:is-number>
+			<http:request method="GET" doc:name="showFlightById" doc:id="15bde4d5-dcec-4d7f-8a19-262de30d4f2d" path="/flight/showById/{flightCode}" config-ref="HTTP_Request_configuration">
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="FLIGHT:NOT_FOUND" />
+			</http:request>
+		</try>
+	</sub-flow>
+	<sub-flow name="showFlightByCarrierName" doc:id="56b149b1-0f28-455c-8554-2937570b633d" >
+		<try doc:name="Try" doc:id="e78573e3-a8d2-4b2b-bc92-e157f90c9a46" >
+			<set-variable value="#[vars.flightCarrierName]" doc:name="Set Variable" doc:id="eede9b1b-d9d6-4345-801b-93f47af864c0" variableName="data" />
+			<validation:is-not-null doc:name="CarrierName not null" doc:id="72c3e2b9-2d47-4977-9553-82b2e5aa7217" value="#[vars.flightCarrierName]" />
+			<http:request method="GET" doc:name="showFlightByCarrierName" doc:id="3f5c45cf-57f8-4496-872b-15feb32dd7d0" config-ref="HTTP_Request_configuration" path="/flight/showByCarrierName/{flightName}">
+			<error-mapping sourceType="HTTP:NOT_FOUND" targetType="FLIGHT:NOT FOUND" />
+		</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="011f20c2-7312-48c7-b503-a7076cb6112b" >
+					<ee:transform doc:name="Transform Message" doc:id="589c5ae1-4300-4817-bfdf-aa4028c32ef9" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Flight carrier name connot be null"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>
