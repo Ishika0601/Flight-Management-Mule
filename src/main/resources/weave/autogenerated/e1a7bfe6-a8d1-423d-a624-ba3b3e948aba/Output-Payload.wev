@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_e1a7bfe6_a8d1_423d_a624_ba3b3e948aba_Output_Payload = Array<{  airportName: String,   airportLocation: String,   airportCode?: Number,   _?: Any}>
+

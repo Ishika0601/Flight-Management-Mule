@@ -17,14 +17,14 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	</http:request-config>
 	<configuration doc:name="Configuration" doc:id="0bda68d1-889d-469d-b8db-94222e069765" defaultErrorHandler-ref="globalError_Handler" />
 	<error-handler name="globalError_Handler" doc:id="7b2bc3fd-9b6e-42c0-b86b-81c5801c02de" >
-		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="58ff25ac-6b95-4778-8842-cc182100e1bf" type="APP:NULL">
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="58ff25ac-6b95-4778-8842-cc182100e1bf" type="ID:NULL">
 			<ee:transform doc:name="Transform Message" doc:id="931ae32a-3889-477f-a07a-401e39ddc736" >
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-	"message": "Null value"
+	"message": vars.data as String ++ "is a null value"
 }]]></ee:set-payload>
 				</ee:message>
 			</ee:transform>
@@ -43,6 +43,18 @@ output application/json
 					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
 					<ee:set-variable variableName="message" ><![CDATA["Not Found"]]></ee:set-variable>
 				</ee:variables>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7af82155-9ab5-47e7-965b-e93ede00fa14" type="ID:INVALID_NUMBER" >
+			<ee:transform doc:name="Transform Message" doc:id="24f57b5f-ba4b-40e9-9ed2-cdc285fa695d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": vars.data as String ++ " should be integer"
+}]]></ee:set-payload>
+				</ee:message>
 			</ee:transform>
 		</on-error-continue>
 	</error-handler>
