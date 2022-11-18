@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_cc100613_f81d_4dc2_a2c9_39f985091972_Input_Payload = {
+  airportName: String, 
+  airportLocation: String, 
+  airportCode?: Number, 
+  _?: Any
+}
+
