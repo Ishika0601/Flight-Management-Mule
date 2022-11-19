@@ -41,7 +41,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 }]]]></http:uri-params>
 			</http:request>
 			<error-handler>
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="43956995-76da-41cd-9d43-793894325e0a" >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="43956995-76da-41cd-9d43-793894325e0a" type="VALIDATION:NULL">
 					<ee:transform doc:name="Transform Message" doc:id="e8aeee03-5456-40bc-bce4-3aa4242133b1" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0
@@ -69,7 +69,7 @@ output application/json
 }]]]></http:uri-params>
 			</http:request>
 			<error-handler >
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1694cc88-f39d-4bf9-8e90-1edfcb75024a" >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1694cc88-f39d-4bf9-8e90-1edfcb75024a" type="VALIDATION:NULL">
 					<ee:transform doc:name="Transform Message" doc:id="735539cc-9e0d-467d-a9e3-7c143ceaecb9" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0
