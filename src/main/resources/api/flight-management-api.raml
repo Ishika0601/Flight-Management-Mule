@@ -285,7 +285,7 @@ types:
                 type: Passenger[]
                 example: !include Examples/PassengerGetAllExample.raml
 
-    /addPassenger:
+    /addPassenger/{bookingId}:
       post:
         body:
           application/json:
@@ -387,8 +387,8 @@ types:
           200:
             body:
               application/json:
-                type: Passenger
-                example: !include Examples/PassengerExample.raml
+                type: Passenger[]
+                example: !include Examples/PassengerGetAllExample.raml
           400:
             body:
               application/json:
@@ -703,6 +703,10 @@ types:
         queryParameters:
           noOfPassengers: 
             required: false
+          sfid:
+            required: true
+          userID:
+            required: true
         body:
           application/json:
             type: Passenger[]
