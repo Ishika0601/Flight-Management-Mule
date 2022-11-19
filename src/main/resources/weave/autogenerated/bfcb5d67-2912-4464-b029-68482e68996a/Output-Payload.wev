@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_bfcb5d67_2912_4464_b029_68482e68996a_Output_Payload = {
+  userPassword: String, 
+  userPhone: Number, 
+  userType: String, 
+  userName: String, 
+  userID?: Number, 
+  email: String, 
+  _?: Any
+}
+

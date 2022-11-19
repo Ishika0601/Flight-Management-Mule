@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_a1eddd32_3a46_4f56_a6a6_0b3bdf87eaff_Input_Payload = {
+  userPassword: String, 
+  userPhone: Number, 
+  userType: String, 
+  userName: String, 
+  userID?: Number, 
+  email: String, 
+  _?: Any
+}
+

@@ -219,16 +219,7 @@ output application/json
                 <ee:set-variable variableName="userId">attributes.uriParams.'userId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "User updated"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="modifyUser" doc:id="df8fb8b4-c826-4e89-a8f7-db6fe469092a" name="modifyUser"/>
     </flow>
     <flow name="delete:\api\airport\deleteAirport\(airportCode):flight-management-api-config">
         <ee:transform>
@@ -329,16 +320,7 @@ output application/json
                 <ee:set-variable variableName="userId">attributes.uriParams.'userId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "User deleted"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="deleteUser" doc:id="0b1ecd86-b7ed-477c-a3d8-cf2eee7f232b" name="deleteUser"/>
     </flow>
     <flow name="patch:\api\airport\patchAirport\(airportCode):flight-management-api-config" doc:id="e0a7b720-08f5-4458-874a-87d86bf6b07f">
         <ee:transform>
@@ -434,16 +416,23 @@ output application/json
                 <ee:set-variable variableName="userId">attributes.uriParams.'userId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="69477a2b-1f7b-4782-8136-14dc892e326a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  message: "User updated"
+	
+	"userId": vars.userId,
+	"userType": attributes.queryParams.userType default "empty",
+	"userName": attributes.queryParams.userName default "empty",
+	"userPassword": attributes.queryParams.userPassword default "empty",
+	"userPhone": attributes.queryParams.userPhone default 0,
+	"email": attributes.queryParams.email default "empty"
 }]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="patchUser" doc:id="32e077d7-f2d9-468e-bc9f-87db5d85a607" name="patchUser"/>
     </flow>
     <flow name="patch:\api\booking\patchbooking\(bookingId):application\json:flight-management-api-config">
         <ee:transform>
@@ -723,39 +712,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\api\user\showAllUsers:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    userType: "Admin",
-    userId: 45,
-    userName: "Rohit",
-    userPassword: "Rohit@45",
-    userPhone: 676,
-    email: "rohitsharma@gmail.com"
-  }, 
-  {
-    userType: "User",
-    userId: 18,
-    userName: "Virat",
-    userPassword: "Virat@18",
-    userPhone: 8282,
-    email: "virat18@gmail.com"
-  }, 
-  {
-    userType: "Admin",
-    userId: 63,
-    userName: "Sky",
-    userPassword: "Sky@63",
-    userPhone: 67872,
-    email: "sky63@gmail.com"
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="fec41923-2fd1-4073-b0b0-18863291f843" name="showAllUsers"/>
     </flow>
     <flow name="get:\api\scheduledflight\showByAirport\(src)\(dsc)\(date):flight-management-api-config">
         <ee:transform>
@@ -997,21 +954,7 @@ output application/json
                 <ee:set-variable variableName="email">attributes.uriParams.'email'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  userType: "Admin",
-  userId: 45,
-  userName: "Rohit",
-  userPassword: "Rohit@45",
-  userPhone: 676,
-  email: "rohitsharma@gmail.com"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="43179331-1a60-4feb-9b6f-0888151fb1a7" name="showByEmail"/>
     </flow>
     <flow name="get:\api\scheduledflight\showByFno\(flightNumber):flight-management-api-config">
         <ee:transform>
@@ -1198,21 +1141,7 @@ output application/json
                 <ee:set-variable variableName="userId">attributes.uriParams.'userId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  userType: "Admin",
-  userId: 45,
-  userName: "Rohit",
-  userPassword: "Rohit@45",
-  userPhone: 676,
-  email: "rohitsharma@gmail.com"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="d2efe3b8-9b8a-42d6-b3e8-89dff25f1fa3" name="showById"/>
     </flow>
     <flow name="get:\api\airport\showByLocation\(airportLocation):flight-management-api-config">
         <ee:transform>
@@ -1266,21 +1195,7 @@ output application/json
                 <ee:set-variable variableName="userName">attributes.uriParams.'userName'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  userType: "Admin",
-  userId: 45,
-  userName: "Rohit",
-  userPassword: "Rohit@45",
-  userPhone: 676,
-  email: "rohitsharma@gmail.com"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showByUserName" doc:id="059aca7b-78ae-48c4-8fe3-8fe4d6aebd7b" name="showByUserName"/>
     </flow>
     <flow name="get:\api\booking\showBySfid\(sfid):flight-management-api-config">
         <ee:transform>
@@ -1525,15 +1440,6 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="post:\api\user\addUser:application\json:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "User added"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="c0318776-390e-4e9d-b232-f225eed792ba" name="addUser"/>
     </flow>
 </mule>

@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_7b25eb60_9243_4bbf_a5a4_67d7ce5fca5a_Output_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| email: String |}, 
+  version: String, 
+  localAddress: String
+|}
+

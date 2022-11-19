@@ -57,5 +57,37 @@ output application/json
 				</ee:message>
 			</ee:transform>
 		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3d32a880-2ab9-4ab8-ae98-ecd2c8d7955e" type="USER:NOT_FOUND" >
+			<ee:transform doc:name="Transform Message" doc:id="b6429ca3-7712-44e5-9184-f2e33b703329" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No User found with " ++ vars.data as String
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+					<ee:set-variable variableName="message" ><![CDATA["Not Found"]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="8a5d74a1-5944-4e4f-af08-8d8f926f819e" type="USER:INTERNAL_SERVER_ERROR" >
+			<ee:transform doc:name="Transform Message" doc:id="0c9f1fba-3d62-4e2b-a1fe-b010a9895a1d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No User found with " ++ vars.data as String
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+					<ee:set-variable variableName="message" ><![CDATA["Not Found"]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-continue>
 	</error-handler>
 </mule>
