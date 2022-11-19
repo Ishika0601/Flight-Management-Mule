@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="showAllSchedules" doc:id="4bfb6321-9c88-4b2a-8f15-adc0b9cd84d8" >
+		<http:request method="GET" doc:name="showAllSchedules" doc:id="7cfdd5df-22d6-4e49-b895-75f075047caf" config-ref="HTTP_Request_configuration" path="/schedule/showAllSchedules"/>
+	</sub-flow>
+	<sub-flow name="showScheduleById" doc:id="4e631896-1673-4206-a5a2-dd05ca9809e5" >
+		<try doc:name="Try" doc:id="25da9e0c-e67a-450e-9111-a5e55b76573a" >
+			<set-variable value="#[vars.scheduleId]" doc:name="Set Variable" doc:id="95a45ed0-d3dd-4828-9878-f12850cbee9f" variableName="data" />
+			<validation:is-not-null doc:name="Id not null" doc:id="3a665e52-97ad-453b-846c-3d8d1f2a98b0" value="#[vars.scheduleId]">
+				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
+			</validation:is-not-null>
+			<validation:is-number doc:name="Id is number" doc:id="608f8076-9dda-4334-aa38-1a7f53abd57b" value="#[vars.scheduleId]" numberType="LONG">
+				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+			</validation:is-number>
+			<http:request method="GET" doc:name="showScheduleById" doc:id="f2f22c03-9388-45fa-8bca-64da8b332ed2" config-ref="HTTP_Request_configuration" path="/schedule/showById/{scheduleId}">
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULE:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"scheduleId" : vars.scheduleId
+}]]]></http:uri-params>
+			</http:request>
+		</try>
+	</sub-flow>
+	<sub-flow name="showScheduleBySource" doc:id="7161dd46-aa9d-4398-8c33-c9db7165242d" >
+		<try doc:name="Try" doc:id="5af2f126-f276-4fef-a0df-0b9656c13912" >
+			<set-variable value="#[vars.airportName]" doc:name="Set Variable" doc:id="86b97edc-2e11-4fa8-ac87-88253293722b" variableName="data" />
+			<validation:is-not-blank-string doc:name="Source not blank string" doc:id="4713e2b6-956f-46c6-8926-74e05c113434" value="#[vars.airportName]" />
+			<http:request method="GET" doc:name="showScheduleBySource" doc:id="3de4d9b7-104f-4144-baff-dde181936fbb" config-ref="HTTP_Request_configuration" path="/schedule/showBySourceName/{srcName}">
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULE:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"srcName" : vars.airportName
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="8792892e-fbfc-4c61-aa24-f5bbcd9e8424" type="VALIDATION:BLANK_STRING">
+					<ee:transform doc:name="Transform Message" doc:id="227c470f-1695-40a0-9c41-7df578fb9c01" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Source name cannot be blank"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="showScheduleByDestination" doc:id="f5455794-5f77-4c65-b789-58687a9dd529" >
+		<try doc:name="Try" doc:id="1ab0d7c9-4d3a-400b-9763-29ef788c76e8" >
+			<set-variable value="#[vars.airportName]" doc:name="Set Variable" doc:id="b795ed1f-05e3-42b9-970b-8246399f7416" variableName="data" />
+			<validation:is-not-blank-string doc:name="Destination not blank string" doc:id="98a006d7-b6f0-42a2-8ea0-8a4190f876b5" value="#[vars.airportName]" />
+			<http:request method="GET" doc:name="showScheduleByDestination" doc:id="485cf94f-d79a-422d-910c-65348e52b056" config-ref="HTTP_Request_configuration" path="/schedule/showByDestinationName/{dstName}" >
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULE:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"dstName" : vars.airportName
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7f165b67-aea0-4204-b806-585f00dd7639" type="VALIDATION:BLANK_STRING" >
+					<ee:transform doc:name="Transform Message" doc:id="48831a1e-18ac-4a75-a0eb-033b344ba19a" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Destination name cannot be blank"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="showScheduleByArrival" doc:id="01fd4d58-9d0b-4a06-a601-65c28dc2ea4a" >
+		<try doc:name="Try" doc:id="7bfc2bd2-75c6-4094-887d-4467c64d539c" >
+			<set-variable value="#[vars.arrivalDate]" doc:name="Set Variable" doc:id="34f3795f-0cd2-4c23-a5d3-53c605e6a60e" variableName="data"/>
+			<validation:is-not-blank-string doc:name="Arrival not blank string" doc:id="4d4f56ff-7071-449f-afc5-1d649214f414" value="#[vars.arrivalDate]"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ca469674-6b73-40a1-9c07-87d26369bd78" type="VALIDATION:BLANK_STRING">
+					<ee:transform doc:name="Transform Message" doc:id="716d2462-cdc9-4668-b8fa-1ddebc2a5592" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Arrival date cannot be blank"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

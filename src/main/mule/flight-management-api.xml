@@ -670,45 +670,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\api\schedule\showAllSchedules:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    scheduleId: 101,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-14T20:00:00",
-    departureTime: "2022-11-14T16:00:00"
-  }, 
-  {
-    scheduleId: 102,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-15T15:00:00",
-    departureTime: "2022-11-15T11:00:00"
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showAllSchedules" doc:id="54a0f8c3-6e07-4b9f-8322-c64c4c156ff6" name="showAllSchedules"/>
     </flow>
     <flow name="get:\api\user\showAllUsers:flight-management-api-config">
         <flow-ref doc:name="Flow Reference" doc:id="fec41923-2fd1-4073-b0b0-18863291f843" name="showAllUsers" />
@@ -787,45 +749,7 @@ output application/json
                 <ee:set-variable variableName="arrivalDate">attributes.uriParams.'arrivalDate'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    scheduleId: 101,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-14T20:00:00",
-    departureTime: "2022-11-14T16:00:00"
-  }, 
-  {
-    scheduleId: 102,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-15T15:00:00",
-    departureTime: "2022-11-15T11:00:00"
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showScheduleByArrival" doc:id="f86d4c37-527f-4ab1-9dac-a3b6f10c3dde" name="showScheduleByArrival"/>
     </flow>
     <flow name="get:\api\flights\showByCarrierName\(carrierName):flight-management-api-config">
         <ee:transform>
@@ -907,45 +831,7 @@ output application/json
                 <ee:set-variable variableName="airportName">attributes.uriParams.'airportName'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    scheduleId: 101,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-14T20:00:00",
-    departureTime: "2022-11-14T16:00:00"
-  }, 
-  {
-    scheduleId: 102,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-15T15:00:00",
-    departureTime: "2022-11-15T11:00:00"
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showScheduleByDestination" doc:id="3db76824-c275-43f2-9c66-c14a25a0425e" name="showScheduleByDestination"/>
     </flow>
     <flow name="get:\api\user\showByEmail\(email):flight-management-api-config">
         <ee:transform>
@@ -1111,28 +997,7 @@ output application/json
                 <ee:set-variable variableName="scheduleId">attributes.uriParams.'scheduleId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  scheduleId: 101,
-  sourceAirport: {
-    airportCode: 101,
-    airportName: "Indira Gandhi International Airport",
-    airportLocation: "Delhi"
-  },
-  destinationAirport: {
-    airportCode: 102,
-    airportName: "Chhatrapati Shivaji International Airport",
-    airportLocation: "Mumbai"
-  },
-  arrivalTime: "2022-11-14T20:00:00",
-  departureTime: "2022-11-14T16:00:00"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showScheduleById" doc:id="c00b9e6a-b79e-4edf-8566-62fbdb7bb255" name="showScheduleById"/>
     </flow>
     <flow name="get:\api\user\showById\(userId):flight-management-api-config">
         <ee:transform>
@@ -1314,45 +1179,7 @@ output application/json
                 <ee:set-variable variableName="airportName">attributes.uriParams.'airportName'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    scheduleId: 101,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-14T20:00:00",
-    departureTime: "2022-11-14T16:00:00"
-  }, 
-  {
-    scheduleId: 102,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-15T15:00:00",
-    departureTime: "2022-11-15T11:00:00"
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showScheduleBySource" doc:id="45138b63-1e47-4129-8af8-0ac66285887f" name="showScheduleBySource"/>
     </flow>
     <flow name="get:\api\passenger\showByUIN\(passengerUIN):flight-management-api-config">
         <ee:transform>

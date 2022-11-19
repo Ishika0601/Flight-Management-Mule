@@ -36,7 +36,7 @@ output application/json
 output application/json
 ---
 {
-	"message": "No airport found with " ++ vars.data as String
+	"message": "No airport found for " ++ vars.data as String
 }]]></ee:set-payload>
 				</ee:message>
 				<ee:variables >
@@ -87,6 +87,18 @@ output application/json
 					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
 					<ee:set-variable variableName="message" ><![CDATA["Not Found"]]></ee:set-variable>
 				</ee:variables>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="75369c34-f023-484b-a039-5cdeeee5f604" type="SCHEDULE:NOT_FOUND">
+			<ee:transform doc:name="Transform Message" doc:id="38ffefc9-b1d5-4ba3-b108-59e45dfb8bac" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No schedule found for " ++ vars.data as String
+}]]></ee:set-payload>
+				</ee:message>
 			</ee:transform>
 		</on-error-continue>
 	</error-handler>

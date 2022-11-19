@@ -1,0 +1,21 @@
+%dw 2.0
+
+type auto_4e631896_1673_4206_a5a2_dd05ca9809e5_Input_Payload = {
+  departureTime: String, 
+  arrivalTime: String, 
+  sourceAirport: {
+    airportName: String, 
+    airportLocation: String, 
+    airportCode?: Number, 
+    _?: Any
+  }, 
+  scheduleId?: Number, 
+  destinationAirport: {
+    airportName: String, 
+    airportLocation: String, 
+    airportCode?: Number, 
+    _?: Any
+  }, 
+  _?: Any
+}
+

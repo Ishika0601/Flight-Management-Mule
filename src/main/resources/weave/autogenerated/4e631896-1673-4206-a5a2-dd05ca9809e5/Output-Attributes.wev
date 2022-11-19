@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_4e631896_1673_4206_a5a2_dd05ca9809e5_Output_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| scheduleId: String |}, 
+  version: String, 
+  localAddress: String
+|}
+
