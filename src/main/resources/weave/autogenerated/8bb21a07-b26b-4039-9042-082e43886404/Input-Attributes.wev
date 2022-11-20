@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_8bb21a07_b26b_4039_9042_082e43886404_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| flightNumber: String |}, 
+  version: String, 
+  localAddress: String
+|}
+

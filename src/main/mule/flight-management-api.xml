@@ -496,65 +496,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\api\scheduledflight\showAllSchFlights:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    sfid: 101,
-    availableSeats: 90,
-    flight: {
-      carrierName: "Indigo",
-      flightModel: "Jet",
-      flightNumber: 10001,
-      seatCapacity: 100
-    },
-    schedule: {
-      sid: 101,
-      sourceAirport: {
-        airportCode: 101,
-        airportName: "Indira Gandhi International Airport",
-        airportLocation: "Delhi"
-      },
-      destinationAirport: {
-        airportCode: 102,
-        airportName: "Chhatrapati Shivaji International Airport",
-        airportLocation: "Mumbai"
-      },
-      arrivalTime: "2022-11-14T20:00:00",
-      departureTime: "2022-11-14T16:00:00"
-    }
-  }, 
-  {
-    sfid: 102,
-    availableSeats: 100,
-    flight: {
-      carrierName: "SpiceJet",
-      flightModel: "Airbus",
-      flightNumber: 10002,
-      seatCapacity: 120
-    },
-    schedule: {
-      sid: 102,
-      sourceAirport: {
-        airportCode: 101,
-        airportName: "Indira Gandhi International Airport",
-        airportLocation: "Delhi"
-      },
-      destinationAirport: {
-        airportCode: 102,
-        airportName: "Chhatrapati Shivaji International Airport",
-        airportLocation: "Mumbai"
-      },
-      arrivalTime: "2022-11-14T20:00:00",
-      departureTime: "2022-11-14T16:00:00"
-    }
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showAllSchFlights" doc:id="ad3522f2-e11a-4ac5-8cf2-d471edb1f7c8" name="showAllSchFlights"/>
     </flow>
     <flow name="get:\api\schedule\showAllSchedules:flight-management-api-config">
         <flow-ref doc:name="showAllSchedules" doc:id="54a0f8c3-6e07-4b9f-8322-c64c4c156ff6" name="showAllSchedules" />
@@ -570,65 +512,7 @@ output application/json
                 <ee:set-variable variableName="date">attributes.uriParams.'date'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    sfid: 101,
-    availableSeats: 90,
-    flight: {
-      carrierName: "Indigo",
-      flightModel: "Jet",
-      flightNumber: 10001,
-      seatCapacity: 100
-    },
-    schedule: {
-      sid: 101,
-      sourceAirport: {
-        airportCode: 101,
-        airportName: "Indira Gandhi International Airport",
-        airportLocation: "Delhi"
-      },
-      destinationAirport: {
-        airportCode: 102,
-        airportName: "Chhatrapati Shivaji International Airport",
-        airportLocation: "Mumbai"
-      },
-      arrivalTime: "2022-11-14T20:00:00",
-      departureTime: "2022-11-14T16:00:00"
-    }
-  }, 
-  {
-    sfid: 102,
-    availableSeats: 100,
-    flight: {
-      carrierName: "SpiceJet",
-      flightModel: "Airbus",
-      flightNumber: 10002,
-      seatCapacity: 120
-    },
-    schedule: {
-      sid: 102,
-      sourceAirport: {
-        airportCode: 101,
-        airportName: "Indira Gandhi International Airport",
-        airportLocation: "Delhi"
-      },
-      destinationAirport: {
-        airportCode: 102,
-        airportName: "Chhatrapati Shivaji International Airport",
-        airportLocation: "Mumbai"
-      },
-      arrivalTime: "2022-11-14T20:00:00",
-      departureTime: "2022-11-14T16:00:00"
-    }
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showSchByAirport" doc:id="d6ca301a-e569-4ddd-9903-2c164f1e4597" name="showSchByAirport"/>
     </flow>
     <flow name="get:\api\schedule\showByArrival\(arrivalDate):flight-management-api-config">
         <ee:transform>
@@ -734,38 +618,7 @@ output application/json
                 <ee:set-variable variableName="flightNumber">attributes.uriParams.'flightNumber'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  sfid: 101,
-  availableSeats: 90,
-  flight: {
-    carrierName: "Indigo",
-    flightModel: "Jet",
-    flightNumber: 10001,
-    seatCapacity: 100
-  },
-  schedule: {
-    sid: 101,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-14T20:00:00",
-    departureTime: "2022-11-14T16:00:00"
-  }
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showByFno" doc:id="e534bd36-9ba0-4de7-b5e5-325a85be8107" name="showByFno"/>
     </flow>
     <flow name="get:\api\flights\showByFno\(flightNumber):flight-management-api-config">
         <ee:transform>
@@ -773,7 +626,7 @@ output application/json
                 <ee:set-variable variableName="flightNumber">attributes.uriParams.'flightNumber'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
+		<ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -962,16 +815,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="post:\api\scheduledflight\addSchFlight:application\json:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "ScheduledFlight added"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="addSchFlight" doc:id="20f79f22-3196-4e8e-9d56-e9283dfbbdaa" name="addSchFlight"/>
     </flow>
     <flow name="post:\api\schedule\addSchedule:application\json:flight-management-api-config">
         <ee:transform>

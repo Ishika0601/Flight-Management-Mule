@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_a2c90f6a_ca65_427b_9aad_d11bc9382969_Input_Payload = Array<{  flight: {    seatCapacity: Number,     carrierName: String,     flightModel: String,     flightNumber?: Number,     _?: Any  },   schedule: {    departureTime: String,     arrivalTime: String,     sourceAirport: {      airportName: String,       airportLocation: String,       airportCode?: Number,       _?: Any    },     scheduleId?: Number,     destinationAirport: {      airportName: String,       airportLocation: String,       airportCode?: Number,       _?: Any    },     _?: Any  },   availableSeats: Number,   sfid?: Number,   _?: Any}>
+

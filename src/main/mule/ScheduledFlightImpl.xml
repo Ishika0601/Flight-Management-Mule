@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="showAllSchFlights" doc:id="634e1321-f486-4379-b262-374cf1857e08" >
+		<http:request method="GET" doc:name="Request" doc:id="c66c5db0-49d6-4e37-a2ee-279943b37909" config-ref="HTTP_Request_configuration" path="/scheduledflight/showAllSchFlights">
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULEDFLIGHT:NOT_FOUND" />
+			</http:request>
+	</sub-flow>
+	<sub-flow name="addSchFlight" doc:id="830794e3-5b63-4613-9b81-5dc598ff4a64" >
+		<try doc:name="Try" doc:id="b970dba0-3455-4bc5-bd00-79f1cae676f6" >
+			<validation:is-true doc:name="Is seatCap more than avlSeats" doc:id="26a2b277-6179-4c90-b367-b520d62fc75d" expression="#[payload.flight.seatCapacity &gt; payload.availableSeats or payload.availableSeats &gt; 0]" />
+			<http:request method="POST" doc:name="Request" doc:id="e74fd455-1af4-4c4c-9824-b3f949732df6" config-ref="HTTP_Request_configuration" path="/scheduledflight/addSchFlight"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2897c70a-84b2-4d04-bfc1-a97afbc79254" type="VALIDATION:INVALID_BOOLEAN">
+					<ee:transform doc:name="Transform Message" doc:id="e4089fb7-1b30-4512-84e8-cf1eb6601b5c" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Available Seats should be less than Seat Capacity or should not be less than zero."
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="showByFno" doc:id="8bb21a07-b26b-4039-9042-082e43886404" >
+		<try doc:name="Try" doc:id="a7724bf5-e22e-4f60-895c-29471fe9040e" >
+			<validation:is-not-null doc:name="Fno not null" doc:id="5b407b81-9c06-48b4-a34b-6738fa10581d" value="#[vars.flightNumber]">
+				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
+			</validation:is-not-null>
+			<validation:is-number numberType="LONG" doc:name="Fno is number" doc:id="0382e91f-a43d-4fe8-9fe2-7fd6d70c4d92" value="#[vars.flightNumber]">
+				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+			</validation:is-number>
+			<http:request method="GET" doc:name="Request" doc:id="2b540cf2-26fc-4006-90b7-ab74fbba9b56" config-ref="HTTP_Request_configuration" path="/scheduledflight/showByFno/{fno}">
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULEDFLIGHT:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"fno" : vars.flightNumber
+}]]]></http:uri-params>
+			</http:request>
+		</try>
+	</sub-flow>
+	<sub-flow name="showSchByAirport" doc:id="a2c90f6a-ca65-427b-9aad-d11bc9382969" >
+		<try doc:name="Try" doc:id="f8e886fa-8b00-4596-805c-930ffe5647e7" >
+			<validation:is-true doc:name="Is src &amp; desc not same" doc:id="013acfe2-beb1-48b6-bd04-a7be48f92bd3" expression="#[vars.src != vars.dsc]"/>
+			<http:request method="GET" doc:name="Request" doc:id="bb8fb99c-2945-480b-ab35-4e2577c30f71" config-ref="HTTP_Request_configuration" path="/scheduledflight/showByAirport/{src}/{dsc}/{date}">
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULEDFLIGHT:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"date" : vars.date,
+	"src" : vars.src,
+	"dsc" : vars.dsc
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6e69eee5-8870-4722-96d8-a4b0b7f0ffde" type="VALIDATION:INVALID_BOOLEAN" >
+					<ee:transform doc:name="Transform Message" doc:id="a394d036-958f-481a-876b-5948df362003" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Source and Destination Airports should not be same."
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>
