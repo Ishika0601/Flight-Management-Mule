@@ -780,16 +780,7 @@ output application/json
 		<flow-ref doc:name="addSchFlight" doc:id="20f79f22-3196-4e8e-9d56-e9283dfbbdaa" name="addSchFlight"/>
     </flow>
     <flow name="post:\api\schedule\addSchedule:application\json:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Schedule added"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="addSchedule" doc:id="b3b6a8ca-f135-450d-b860-c86acf929dfa" name="addSchedule"/>
     </flow>
     <flow name="post:\api\user\addUser:application\json:flight-management-api-config">
         <flow-ref doc:name="Flow Reference" doc:id="c0318776-390e-4e9d-b232-f225eed792ba" name="addUser" />

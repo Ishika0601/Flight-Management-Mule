@@ -193,5 +193,57 @@ output application/json
 			</error-handler>
 		</try>
 	</sub-flow>
+	<sub-flow name="addSchedule" doc:id="e0d94a21-1282-4175-b831-4653db2597ad" >
+		<try doc:name="Try" doc:id="d0707a78-4278-461a-b23e-8257f2468a84" >
+			<validation:is-true doc:name="Departure and arrival time valid" doc:id="8e11908d-b05b-4afb-b75f-2f77631f36e8" expression="#[(payload.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) and (payload.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]">
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULE:INVALID_TIME" />
+			</validation:is-true>
+			<validation:is-true doc:name="Arrival greater than departure" doc:id="1c23228b-fd13-4ba0-90c9-fa6dfdaed424" expression="#[(payload.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) &gt; (payload.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]">
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULE:INVALID_ARRDEP" />
+			</validation:is-true>
+			<validation:is-true doc:name="Source and destination are not same" doc:id="3bf5ac95-252f-4359-b6f0-be73af4e0494" expression="#[payload.sourceAirport.airportCode != payload.destinationAirport.airportCode]">
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULE:INVALID_SRCDST" />
+			</validation:is-true>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="399cc6b2-d92a-41d2-8af7-94eb66554c0d" type="SCHEDULE:INVALID_TIME">
+					<ee:transform doc:name="Transform Message" doc:id="4dd995b6-6d5f-4546-b117-44db6540fc82" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Arrival time or departure time is invalid"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e9584729-3045-47a0-815a-95fc20b2ece6" type="SCHEDULE:INVALID_SRCDST">
+					<ee:transform doc:name="Transform Message" doc:id="0f2f16c4-d557-4e5d-9311-33eac7aa75c7" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Source airport and destination airport cannot be same"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f1882a11-47a9-4375-b461-ae726525fa09" type="SCHEDULE:INVALID_ARRDEP">
+					<ee:transform doc:name="Transform Message" doc:id="88a313bb-c153-49e5-b43a-cb66a2d0870b" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Arrival time should be greater than departure time"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<http:request method="POST" doc:name="addSchedule" doc:id="5a888623-f52e-4411-8338-f8364e57dda1" config-ref="HTTP_Request_configuration" path="/schedule/addSchedule" />
+	</sub-flow>
 
 </mule>

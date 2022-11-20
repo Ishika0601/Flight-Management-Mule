@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	</sub-flow>
 	<sub-flow name="addSchFlight" doc:id="830794e3-5b63-4613-9b81-5dc598ff4a64" >
 		<try doc:name="Try" doc:id="b970dba0-3455-4bc5-bd00-79f1cae676f6" >
-			<validation:is-true doc:name="Is seatCap more than avlSeats" doc:id="26a2b277-6179-4c90-b367-b520d62fc75d" expression="#[payload.flight.seatCapacity &gt; payload.availableSeats or payload.availableSeats &gt; 0]" />
+			<validation:is-true doc:name="Is seatCap more than avlSeats" doc:id="26a2b277-6179-4c90-b367-b520d62fc75d" expression="#[payload.flight.seatCapacity &gt; payload.availableSeats and payload.availableSeats &gt; 0]" />
 			<http:request method="POST" doc:name="Request" doc:id="e74fd455-1af4-4c4c-9824-b3f949732df6" config-ref="HTTP_Request_configuration" path="/scheduledflight/addSchFlight"/>
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="2897c70a-84b2-4d04-bfc1-a97afbc79254" type="VALIDATION:INVALID_BOOLEAN">
