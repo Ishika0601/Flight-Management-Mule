@@ -60,10 +60,25 @@ output application/json
 			</error-handler>
 		</try>
 	</sub-flow>
-	<sub-flow name="addBooking" doc:id="74db2d5e-0cbc-422c-b21c-258fd69812f6" >
-		<try doc:name="Try" doc:id="358441bd-da16-4ca8-9c48-a45a221189cb" >
+	<sub-flow name="addBooking" doc:id="74db2d5e-0cbc-422c-b21c-258fd69812f6">
+		<try doc:name="Try" doc:id="358441bd-da16-4ca8-9c48-a45a221189cb">
+			<validation:is-time doc:name="Is time" doc:id="acf5a93a-f4a3-47fb-89fa-c1852772cb76" time="#[payload.bookingDate]" pattern="yyyy-MM-dd'T'HH:mm:ss"/>
 			<http:request method="POST" doc:name="Request" doc:id="696acaf6-0c8e-4a4d-9b57-474fb0befd38" config-ref="HTTP_Request_configuration" path="/booking/addBooking">
 			</http:request>
+			<error-handler>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="85a5ff00-be36-4c55-be8a-8ded2ea3cece" type="VALIDATION:INVALID_TIME">
+					<ee:transform doc:name="Transform Message" doc:id="7e7b5f45-0af0-4f45-8f25-3dc57123b81c">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Booking date should be in yyyy-MM-dd format"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
 		</try>
 	</sub-flow>
 	<sub-flow name="deleteBooking" doc:id="12033da0-8f27-4d5b-8a71-77e820efd04f" >

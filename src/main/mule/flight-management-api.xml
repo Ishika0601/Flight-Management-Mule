@@ -750,7 +750,7 @@ output application/json
         <flow-ref doc:name="addAirport" doc:id="68d52a70-b804-4d4d-b012-663414c9bc63" name="addAirport" />
     </flow>
     <flow name="post:\api\booking\addBooking:application\json:flight-management-api-config">
-        <flow-ref doc:name="addBooking" doc:id="aefc6c83-60e5-4b20-b764-a97bff510cdf" name="addBooking" />
+        <flow-ref doc:name="addBooking" doc:id="aefc6c83-60e5-4b20-b764-a97bff510cdf" name="addBooking"/>
     </flow>
     <flow name="post:\api\flights\addFlight:application\json:flight-management-api-config">
         <ee:transform>
