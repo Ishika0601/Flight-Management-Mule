@@ -201,16 +201,7 @@ output application/json
                 <ee:set-variable variableName="scheduleId">attributes.uriParams.'scheduleId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Schedule updated"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="modifySchedule" doc:id="892ddaea-fb68-430f-bf48-64d33fa9f429" name="modifySchedule"/>
     </flow>
     <flow name="put:\api\user\modifyUser\(userId):application\json:flight-management-api-config">
         <ee:transform>
@@ -293,16 +284,7 @@ output application/json
                 <ee:set-variable variableName="scheduleId">attributes.uriParams.'scheduleId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Schedule deleted"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="deleteSchedule" doc:id="69d53b87-19c8-455a-83d5-eb797d4dc9cd" name="deleteSchedule"/>
     </flow>
     <flow name="delete:\api\user\deleteUser\(userId):flight-management-api-config">
         <ee:transform>
@@ -395,10 +377,23 @@ output application/json
 output application/json
 ---
 {
-  message: "Schedule patched"
+  "arrivalTime": attributes.queryParams.arrivalTime default "1970-01-01T00:00:00",
+    "departureTime": attributes.queryParams.departureTime default "1970-01-01T00:00:00",
+    "destinationAirport": {
+      "airportCode": attributes.queryParams.sourceId default 0,
+      "airportLocation": "empty",
+      "airportName": "empty"
+    },
+    "sid": vars.scheduleId,
+    "sourceAirport": {
+      "airportCode": attributes.queryParams.sourceId default 0,
+      "airportLocation": "empty",
+      "airportName": "empty"
+    }
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+		<flow-ref doc:name="patchSchedule" doc:id="aa47d8d6-0bfb-4555-9392-f854bc25b148" name="patchSchedule"/>
     </flow>
     <flow name="patch:\api\user\patchUser\(userId):flight-management-api-config">
         <ee:transform>

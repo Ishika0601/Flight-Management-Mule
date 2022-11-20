@@ -12,9 +12,6 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="showScheduleById" doc:id="4e631896-1673-4206-a5a2-dd05ca9809e5" >
 		<try doc:name="Try" doc:id="25da9e0c-e67a-450e-9111-a5e55b76573a" >
 			<set-variable value="#[vars.scheduleId]" doc:name="Set Variable" doc:id="95a45ed0-d3dd-4828-9878-f12850cbee9f" variableName="data" />
-			<validation:is-not-null doc:name="Id not null" doc:id="3a665e52-97ad-453b-846c-3d8d1f2a98b0" value="#[vars.scheduleId]">
-				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
-			</validation:is-not-null>
 			<validation:is-number doc:name="Id is number" doc:id="608f8076-9dda-4334-aa38-1a7f53abd57b" value="#[vars.scheduleId]" numberType="LONG">
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
@@ -245,5 +242,86 @@ output application/json
 		</try>
 		<http:request method="POST" doc:name="addSchedule" doc:id="5a888623-f52e-4411-8338-f8364e57dda1" config-ref="HTTP_Request_configuration" path="/schedule/addSchedule" />
 	</sub-flow>
+	<sub-flow name="modifySchedule" doc:id="7d27715a-b42f-4af7-8a78-aaae3f68c529" >
+		<try doc:name="Try" doc:id="40e6e247-821c-4503-8e81-287842163412" >
+			<set-variable value="#[vars.scheduleId]" doc:name="Set Variable" doc:id="6a8bf0f4-4008-421f-903d-d3d544cbe392" variableName="data" />
+			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="b569ef0a-d4b8-4f27-987b-f3e0999e1709" value="#[vars.scheduleId]">
+				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+			</validation:is-number>
+			<validation:is-true doc:name="Departure and arrival time valid" doc:id="ad977669-83a4-4890-8feb-fe1971e6e060" expression="#[(payload.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) and (payload.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]" >
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULE:INVALID_TIME" />
+			</validation:is-true>
+			<validation:is-true doc:name="Arrival greater than departure" doc:id="e27a2d19-3e70-47dd-a6bd-e69d026b5030" expression="#[(payload.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) &gt; (payload.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]" >
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULE:INVALID_ARRDEP" />
+			</validation:is-true>
+			<validation:is-true doc:name="Source and destination are not same" doc:id="7514a32e-4bf7-4eab-abd4-9d17027d5660" expression="#[payload.sourceAirport.airportCode != payload.destinationAirport.airportCode]" >
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULE:INVALID_SRCDST" />
+			</validation:is-true>
+			<http:request method="PUT" doc:name="modifySchedule" doc:id="47df41b6-29c2-45cc-b175-97e756d67e40" config-ref="HTTP_Request_configuration" path="/schedule/modifySchedule/{scheduleId}">
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULE:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"scheduleId" : vars.scheduleId
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="76fb805f-8d62-4dc8-b6ff-557c34252ab7" type="SCHEDULE:INVALID_TIME" >
+					<ee:transform doc:name="Transform Message" doc:id="dc934ee8-8efe-40ea-bff6-f8f5a0fd2822" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Arrival time or departure time is invalid"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a4fd223f-d494-4466-b8d5-d4e15d20ae57" type="SCHEDULE:INVALID_SRCDST" >
+					<ee:transform doc:name="Transform Message" doc:id="b8238a4a-04f8-4cb7-b347-40df092b4f6d" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Source airport and destination airport cannot be same"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="24258035-76bb-45e0-9969-085df8c3787d" type="SCHEDULE:INVALID_ARRDEP" >
+					<ee:transform doc:name="Transform Message" doc:id="fa6c3c30-49f5-4b36-bcf9-3c11e11a50e2" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Arrival time should be greater than departure time"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="deleteSchedule" doc:id="afc752ea-f305-4beb-bf64-9a42f44e07b6" >
+		<try doc:name="Try" doc:id="a292064e-22f7-456f-a0f2-f87d51311f5f" >
+			<set-variable value="#[vars.scheduleId]" doc:name="Set Variable" doc:id="ccbea862-bbc3-4f91-a286-2cd33f035690" variableName="data" />
+			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="3e02413a-0f94-4bd4-990a-c5a0d83b4c4d" value="#[vars.scheduleId]" >
+				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+			</validation:is-number>
+			<http:request method="DELETE" doc:name="deleteSchedule" doc:id="2bf6d4e9-b158-40d0-a81a-5c86e4d0b1bb" config-ref="HTTP_Request_configuration" path="/schedule/deleteSchedule/{scheduleId}" >
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULE:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"scheduleId" : vars.scheduleId
+}]]]></http:uri-params>
+			</http:request>
+			<set-payload value="Schedule deleted successfully" doc:name="Set Payload" doc:id="6dc2ae2c-5268-43c9-a637-ac0f0360cc91" />
+		</try>
+	</sub-flow>
+	<sub-flow name="patchSchedule" doc:id="8764b712-6bd0-4072-a95a-64079227981f" />
 
 </mule>
