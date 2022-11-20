@@ -101,5 +101,18 @@ output application/json
 				</ee:message>
 			</ee:transform>
 		</on-error-continue>
-	</error-handler>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7432fa73-5b3f-40f8-b501-0ccb0a24e2c0" type="BOOKING:NOT_FOUND">
+			<ee:transform doc:name="Transform Message" doc:id="cbe0c770-5207-46ef-9966-fa5c8d06bdb6" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No booking found for " ++ vars.data as String
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-continue>
+	
+</error-handler>
 </mule>

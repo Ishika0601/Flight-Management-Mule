@@ -1,5 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd"></mule>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="showAllBookings" doc:id="6a998331-f819-4e57-b78e-ffc122986fdb" >
+		<http:request method="GET" doc:name="showAllBookings" doc:id="82c5df70-977d-42b2-9ffb-3afcb49d8f43" config-ref="HTTP_Request_configuration" path="/booking/showAllBookings"/>
+	</sub-flow>
+	<sub-flow name="showBookingById" doc:id="1942be90-eb43-4efe-bfad-8e45e7f990e3" >
+		<try doc:name="Try" doc:id="125f3f40-d194-46bc-90f7-000f8e9583ed" >
+			<set-variable value="#[vars.bookingId]" doc:name="Set Variable" doc:id="12e18210-d6cc-4379-91a9-2b71b35ed535" variableName="data"/>
+			<validation:is-not-null doc:name="Id not null" doc:id="e62bfc1a-8bb9-4e4e-b08c-3b7f7a7c6851" value="#[vars.bookingId]">
+			<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
+		</validation:is-not-null>
+			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="8c38bab6-f3ab-4487-ad57-f2665df3f485" value="#[vars.bookingId]" >
+				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+			</validation:is-number>
+			<http:request method="GET" doc:name="showBookingById" doc:id="d56bf864-053f-43df-9780-511787ad9002" config-ref="HTTP_Request_configuration" path="/booking/showById/{bookingId}" >
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="BOOKING:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"bookingId" : vars.bookingId
+}]]]></http:uri-params>
+			</http:request>
+		</try>
+	</sub-flow>
+	<sub-flow name="showBookingBySfid" doc:id="7d712581-010d-4f3b-a82f-bc5463339f5b" >
+		<try doc:name="Try" doc:id="4ac412db-f7dc-4048-9895-f4510ed27ded" >
+			<set-variable value="#[vars.sfid]" doc:name="Set Variable" doc:id="a56b6ba4-d268-475c-bd40-a11d64917921" variableName="data" />
+			<validation:is-not-null doc:name="Id not null" doc:id="4b7fe08c-f469-4a1f-b3a1-01283016b549" value="#[vars.sfid]" >
+				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
+			</validation:is-not-null>
+			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="2a2d9b4a-9a94-46b4-a102-4648f51bdec8" value="#[vars.sfid]" >
+				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+			</validation:is-number>
+			<http:request method="GET" doc:name="showBookingBySfid" doc:id="9c2adcf5-4d70-456f-8cc7-19ce77b39e74" config-ref="HTTP_Request_configuration" path="/booking/showBySfid/{sfid}" >
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"sfid" : vars.sfid
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4aeaea5f-bf0b-4f1f-8254-68c6a924d361" type="HTTP:NOT_FOUND">
+					<ee:transform doc:name="Transform Message" doc:id="bcad445f-4bcf-4326-a5e0-570118b70e8a" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No booking found for " ++ vars.sfid as String
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="addBooking" doc:id="74db2d5e-0cbc-422c-b21c-258fd69812f6" >
+		<try doc:name="Try" doc:id="358441bd-da16-4ca8-9c48-a45a221189cb" >
+			<http:request method="POST" doc:name="Request" doc:id="696acaf6-0c8e-4a4d-9b57-474fb0befd38" config-ref="HTTP_Request_configuration" path="/booking/addBooking">
+			</http:request>
+		</try>
+	</sub-flow>
+	<sub-flow name="deleteBooking" doc:id="12033da0-8f27-4d5b-8a71-77e820efd04f" >
+		<try doc:name="Try" doc:id="4f7e3e10-c1d9-49bf-abb2-62fe5ae5b85c" >
+			<set-variable value="#[vars.bookingId]" doc:name="Set Variable" doc:id="a9fa3432-eb70-4ba8-b40d-3e9edb9b9e94" variableName="data" />
+			<validation:is-not-null doc:name="Id not null" doc:id="11d3ab13-ac30-443e-8618-f6b3a60cddcc" value="#[vars.bookingId]" >
+				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
+			</validation:is-not-null>
+			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="ed089824-d269-47e5-8f69-7149d5fa034a" value="#[vars.bookingId]" >
+				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+			</validation:is-number>
+			<http:request method="DELETE" doc:name="deleteBooking" doc:id="a8786af2-7488-4a6c-8497-deda9416e405" config-ref="HTTP_Request_configuration" path="/booking/deleteBooking/{bookingId}" >
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="BOOKING:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"bookingId" : vars.bookingId
+}]]]></http:uri-params>
+			</http:request>
+			<set-payload value="Booking deleted successfully" doc:name="Set Payload" doc:id="bd2a1b90-ea09-4d94-ba30-e98bf30dcded" />
+		</try>
+	</sub-flow>
+</mule>
