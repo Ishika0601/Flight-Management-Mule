@@ -322,6 +322,21 @@ output application/json
 			<set-payload value="Schedule deleted successfully" doc:name="Set Payload" doc:id="6dc2ae2c-5268-43c9-a637-ac0f0360cc91" />
 		</try>
 	</sub-flow>
-	<sub-flow name="patchSchedule" doc:id="8764b712-6bd0-4072-a95a-64079227981f" />
+	<sub-flow name="patchSchedule" doc:id="8764b712-6bd0-4072-a95a-64079227981f" >
+		<try doc:name="Try" doc:id="5416da11-50d7-438b-b58a-44234399a7c2" >
+			<set-variable value="#[vars.scheduleId]" doc:name="Set Variable" doc:id="34989c5a-53cd-4c66-9a7a-08c353a20da5" variableName="data" />
+			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="46d23abe-8516-40c0-9b2c-44bd10453e71" value="#[vars.scheduleId]" >
+				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+			</validation:is-number>
+			<http:request method="PATCH" doc:name="patchSchedule" doc:id="da3a0b86-e87e-4cb1-930a-f0b3ffd15b8c" config-ref="HTTP_Request_configuration" path="/schedule/patchSchedule/{scheduleId}" >
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULE:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"scheduleId" : vars.scheduleId
+}]]]></http:uri-params>
+			</http:request>
+		</try>
+	</sub-flow>
 
 </mule>
