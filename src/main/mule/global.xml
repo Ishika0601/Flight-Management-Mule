@@ -125,6 +125,19 @@ output application/json
 				</ee:variables>
 			</ee:transform>
 		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="25d9e47a-aa14-49a7-8996-543437f1c9e9" type="PASSENGER:NOT_FOUND">
+			<ee:transform doc:name="Transform Message" doc:id="f93522f7-6883-4727-aa5d-13a779569cfa" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "Passenger not Found with " ++ vars.data as String
+}
+]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-continue>
 	
 </error-handler>
 </mule>

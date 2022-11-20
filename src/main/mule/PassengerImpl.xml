@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="showAllPassenger" doc:id="dbd764be-f78f-4297-a15e-8b72d183f274" >
+		<http:request method="GET" doc:name="showAllPassengers" doc:id="ab3f696e-f54e-4249-83e5-60b63965f4c1" config-ref="HTTP_Request_configuration" path="/passenger/showAllPassengers"/>
+	</sub-flow>
+	<sub-flow name="showByPnrNumber" doc:id="5028e568-495c-4668-89e1-a1eb430027c1" >
+		<try doc:name="Try" doc:id="904b0dde-5623-4861-aa39-5e0aa40340da" >
+			<set-variable value="#[vars.pnrNumber]" doc:name="PNR Number" doc:id="e809fb6a-c389-4609-b9b6-878791efe782" variableName="data" />
+			<validation:is-number doc:name="PNR is number" doc:id="bab0a723-3a8e-4f1b-b1f3-3ef521a3f905" value="#[vars.pnrNumber]" numberType="LONG">
+			<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+		</validation:is-number>
+			<http:request method="GET" doc:name="Request" doc:id="7d10c0f8-18e3-4a67-8905-b795bc8e9527" config-ref="HTTP_Request_configuration" path="/passenger/showByPnrNumber/{pnr}">
+			<error-mapping sourceType="HTTP:NOT_FOUND" targetType="PASSENGER:NOT_FOUND" />
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"pnr" : vars.pnrNumber
+}]]]></http:uri-params>
+		</http:request>
+		</try>
+	</sub-flow>
+	<sub-flow name="showByPassengerName" doc:id="e7f62ad6-199d-4e5e-9597-69fb5eb5ec31" >
+		<try doc:name="Try" doc:id="420b1b97-8e5f-47fc-8ae0-379ec78ce840" >
+			<set-variable value="#[vars.passengerName]" doc:name="NAME" doc:id="309c20c3-7631-4610-89a6-6c76e4783e17" variableName="data"/>
+			<validation:is-not-blank-string doc:name="Name is not blank string" doc:id="a0a99200-2f8e-4c2b-8a74-d2a013e02949" value="#[vars.passengerName]"/>
+			<http:request method="GET" doc:name="Request" doc:id="d454eba6-db71-41a0-867c-a59d6a4d2976" config-ref="HTTP_Request_configuration" path="/passenger/showByPassengerName/{name}">
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="PASSENGER:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"name" : vars.passengerName
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c1b322cc-6aa9-4e76-8405-3a9a160928bc" type="VALIDATION:BLANK_STRING">
+					<ee:transform doc:name="Transform Message" doc:id="bcbafaff-8c84-46eb-9867-96af8d2a2d0f" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "Passenger name should not be blank"
+	}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

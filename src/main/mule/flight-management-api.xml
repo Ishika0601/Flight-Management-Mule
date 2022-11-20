@@ -466,31 +466,9 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\api\passenger\showAllPassengers:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    pnrNumber: 101,
-    passengerName: "Sahil",
-    passengerAge: 22,
-    passengerUIN: 123456789012,
-    luggage: 9.75
-  }, 
-  {
-    pnrNumber: 102,
-    passengerName: "Hemant",
-    passengerAge: 22,
-    passengerUIN: 123456789013,
-    luggage: 10.05
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showAllPassenger" doc:id="e2364d6e-4110-4cf5-9833-73734e6e4637" name="showAllPassenger"/>
     </flow>
-    <flow name="get:\api\scheduledflight\showAllSchFlights:flight-management-api-config">
+	<flow name="get:\api\scheduledflight\showAllSchFlights:flight-management-api-config">
 		<flow-ref doc:name="showAllSchFlights" doc:id="ad3522f2-e11a-4ac5-8cf2-d471edb1f7c8" name="showAllSchFlights"/>
     </flow>
     <flow name="get:\api\schedule\showAllSchedules:flight-management-api-config">
@@ -619,20 +597,7 @@ output application/json
                 <ee:set-variable variableName="pnrNumber">attributes.uriParams.'pnrNumber'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  pnrNumber: 101,
-  passengerName: "Sahil",
-  passengerAge: 22,
-  passengerUIN: 123456789012,
-  luggage: 9.75
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showByPnrNumber" doc:id="904807a9-46ce-4b13-b964-035cd6525392" name="showByPnrNumber"/>
     </flow>
     <flow name="get:\api\schedule\showById\(scheduleId):flight-management-api-config">
         <ee:transform>
@@ -672,29 +637,7 @@ output application/json
                 <ee:set-variable variableName="passengerName">attributes.uriParams.'passengerName'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    pnrNumber: 101,
-    passengerName: "Sahil",
-    passengerAge: 22,
-    passengerUIN: 123456789012,
-    luggage: 9.75
-  }, 
-  {
-    pnrNumber: 102,
-    passengerName: "Hemant",
-    passengerAge: 22,
-    passengerUIN: 123456789013,
-    luggage: 10.05
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showByPassengerName" doc:id="a96cb2b0-8269-4c47-8b4d-c656de39a427" name="showByPassengerName"/>
     </flow>
     <flow name="get:\api\user\showByName\(userName):flight-management-api-config">
         <ee:transform>
