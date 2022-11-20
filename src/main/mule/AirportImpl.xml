@@ -12,9 +12,6 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="showAirportById" doc:id="cc100613-f81d-4dc2-a2c9-39f985091972" >
 		<try doc:name="Try" doc:id="d9da1f0c-12d9-44b0-b080-a3afeb1790cb" >
 			<set-variable value="#[vars.airportCode]" doc:name="Set Variable" doc:id="1b5b554e-bad1-4ba7-8ec8-cc0e5e066b5d" variableName="data" />
-			<validation:is-not-null doc:name="Id not null" doc:id="eca82913-0d1b-4cd8-b041-ee534666f298" value="#[vars.airportCode]" >
-				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
-			</validation:is-not-null>
 			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="2444de09-db4e-4179-b61d-c90af248104b" value="#[vars.airportCode]">
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
@@ -108,9 +105,6 @@ output application/json
 	<sub-flow name="modifyAirport" doc:id="d3c8bb72-cb87-4232-b5f3-759bcc62800f">
 		<try doc:name="Try" doc:id="1c080d43-bcf4-4302-aa6c-66d8a50c8add">
 			<set-variable value="#[vars.airportCode]" doc:name="Set Variable" doc:id="ec6fb1c3-bd5a-4dda-b3a2-ed34e165435f" variableName="data" />
-			<validation:is-not-null doc:name="Id not null" doc:id="6dd9803b-dcba-485b-b2fc-4b892ad7f388" value="#[vars.airportCode]">
-				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
-			</validation:is-not-null>
 			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="62e698dd-c4ca-44fb-9755-68bbd4af80a0" value="#[vars.airportCode]">
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
@@ -143,9 +137,6 @@ output application/json
 	<sub-flow name="deleteAirport" doc:id="59c85788-820d-4a49-aa89-ede62e49ae75">
 		<try doc:name="Try" doc:id="72c483a8-38ba-4ba5-99f5-0341041d729d">
 			<set-variable value="#[vars.airportCode]" doc:name="Set Variable" doc:id="1ff5b5c1-0116-46bc-89df-4c76c42e0493" variableName="data" />
-			<validation:is-not-null doc:name="Id not null" doc:id="476e6f5a-7cff-4bae-9250-751d1960a3f3" value="#[vars.airportCode]">
-				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
-			</validation:is-not-null>
 			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="6abd4375-1d10-42be-b34e-1dcc444c3d1c" value="#[vars.airportCode]">
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
@@ -163,9 +154,6 @@ output application/json
 	<sub-flow name="patchAirport" doc:id="2e7c01d5-0d1f-412b-89b5-974fd481fb89" >
 		<try doc:name="Try" doc:id="9496b80a-93f7-4864-8474-d8f8afb7d6f1" >
 			<set-variable value="#[vars.airportCode]" doc:name="Set Variable" doc:id="a6fa1a80-ebc4-443d-9940-e01fad9679aa" variableName="data" />
-			<validation:is-not-null doc:name="Id not null" doc:id="cc5c7610-06b5-464e-9bb2-8d80de68c1c2" value="#[vars.airportCode]">
-				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
-			</validation:is-not-null>
 			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="7ade4e1c-a73b-460e-ba00-80d760dc7b76" value="#[vars.airportCode]" >
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
