@@ -88,6 +88,7 @@ output application/json
 		<try doc:name="Try" doc:id="7bfc2bd2-75c6-4094-887d-4467c64d539c" >
 			<set-variable value="#[vars.arrivalDate]" doc:name="Set Variable" doc:id="34f3795f-0cd2-4c23-a5d3-53c605e6a60e" variableName="data"/>
 			<validation:is-not-blank-string doc:name="Arrival not blank string" doc:id="4d4f56ff-7071-449f-afc5-1d649214f414" value="#[vars.arrivalDate]"/>
+			<validation:is-time doc:name="Is time" doc:id="cbc6ae4a-9c01-4667-84ab-536b853899a0" time="#[vars.arrivalDate]"/>
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ca469674-6b73-40a1-9c07-87d26369bd78" type="VALIDATION:BLANK_STRING">
 					<ee:transform doc:name="Transform Message" doc:id="716d2462-cdc9-4668-b8fa-1ddebc2a5592" >
