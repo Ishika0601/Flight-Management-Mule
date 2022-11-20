@@ -7,8 +7,8 @@ properties:
   ticketCost?: number
   noOfPassengers: integer
   user: !include UserDataType.raml
-  sflight: !include ScheduledFlightDataType.raml
-  passengers: 
+  flight: !include ScheduledFlightDataType.raml
+  passengerList: 
     type: array
     items: !include PassengerDataType.raml
       
