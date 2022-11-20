@@ -556,45 +556,7 @@ output application/json
                 <ee:set-variable variableName="departureDate">attributes.uriParams.'departureDate'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    scheduleId: 101,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-14T20:00:00",
-    departureTime: "2022-11-14T16:00:00"
-  }, 
-  {
-    scheduleId: 102,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: "2022-11-15T15:00:00",
-    departureTime: "2022-11-15T11:00:00"
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showScheduleByDeparture" doc:id="254e2091-250a-411d-949d-fe570e9f50d0" name="showScheduleByDeparture"/>
     </flow>
     <flow name="get:\api\schedule\showByDestination\(airportName):flight-management-api-config">
         <ee:transform>

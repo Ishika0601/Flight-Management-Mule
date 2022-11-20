@@ -88,7 +88,16 @@ output application/json
 		<try doc:name="Try" doc:id="7bfc2bd2-75c6-4094-887d-4467c64d539c" >
 			<set-variable value="#[vars.arrivalDate]" doc:name="Set Variable" doc:id="34f3795f-0cd2-4c23-a5d3-53c605e6a60e" variableName="data"/>
 			<validation:is-not-blank-string doc:name="Arrival not blank string" doc:id="4d4f56ff-7071-449f-afc5-1d649214f414" value="#[vars.arrivalDate]"/>
-			<validation:is-time doc:name="Is time" doc:id="cbc6ae4a-9c01-4667-84ab-536b853899a0" time="#[vars.arrivalDate]"/>
+			<validation:is-time doc:name="Arrival date format" doc:id="cbc6ae4a-9c01-4667-84ab-536b853899a0" time="#[vars.arrivalDate]" pattern="yyyy-MM-dd"/>
+			<validation:is-true doc:name="Arrival date greater than 2022" doc:id="3642f749-804b-42d6-abdb-c58321933b6e" expression='#[vars.arrivalDate as Date {format:"yyyy-MM-dd"} &gt; "2022-01-01" as Date {format:"yyyy-MM-dd"}]'/>
+			<http:request method="GET" doc:name="showScheduleByArrival" doc:id="82f57c41-f7c2-40aa-9844-94b5f3ffd6e7" config-ref="HTTP_Request_configuration" path="/schedule/showByArrivalDate/{arrival}">
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULE:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"arrival" : vars.arrivalDate
+}]]]></http:uri-params>
+			</http:request>
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ca469674-6b73-40a1-9c07-87d26369bd78" type="VALIDATION:BLANK_STRING">
 					<ee:transform doc:name="Transform Message" doc:id="716d2462-cdc9-4668-b8fa-1ddebc2a5592" >
@@ -102,7 +111,87 @@ output application/json
 						</ee:message>
 					</ee:transform>
 				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="47c87a1f-77e7-43b0-9680-bdde21f16ae1" type="VALIDATION:INVALID_TIME">
+					<ee:transform doc:name="Transform Message" doc:id="600f469b-e6f3-4753-a3f6-8202fe94fe93" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Arrival date should be in yyyy-MM-dd format"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fe61510e-85a9-4a9d-a733-11cfb2a9e416" type="VALIDATION:INVALID_BOOLEAN">
+					<ee:transform doc:name="Transform Message" doc:id="464fb102-c29d-4cbd-8a3a-b0495d12d4bc" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Arrival should be greater than 2022-01-01"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			
+</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="showScheduleByDeparture" doc:id="faf7476e-e3e1-4696-8111-919c963c8762" >
+		<try doc:name="Try" doc:id="cfc305c1-1d2d-4a3b-8ff6-62e5d6a84eec" >
+			<set-variable value="#[vars.departureDate]" doc:name="Set Variable" doc:id="90bf88ad-5966-4af5-8ea2-995b71832ddb" variableName="data" />
+			<validation:is-not-blank-string doc:name="Departure not blank string" doc:id="32052bc1-c5dc-4935-b126-b911359dd4ac" value="#[vars.departureDate]" />
+			<validation:is-time doc:name="Departure date format" doc:id="183fbd83-edd3-4c03-8688-dd23c69091b6" time="#[vars.departureDate]" pattern="yyyy-MM-dd" />
+			<validation:is-true doc:name="Departure date greater than 2022" doc:id="99504438-a0aa-4057-a344-cb1fad72782c" expression='#[vars.departureDate as Date {format:"yyyy-MM-dd"} &gt; "2022-01-01" as Date {format:"yyyy-MM-dd"}]' />
+			<http:request method="GET" doc:name="showScheduleByDeparture" doc:id="f33f2476-a657-4d73-a8e7-e16b9eaf0586" config-ref="HTTP_Request_configuration" path="/schedule/showByDepartureDate/{departure}" >
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULE:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"departure" : vars.departureDate
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b893f0d3-382e-42d3-a69b-054661dbbc09" type="VALIDATION:BLANK_STRING" >
+					<ee:transform doc:name="Transform Message" doc:id="282bf8ff-0d61-4a8c-b726-1f3b2417dfd5" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Departure date cannot be blank"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="135cc13d-ccdc-4ea1-a620-87a1eaf07ba6" type="VALIDATION:INVALID_TIME" >
+					<ee:transform doc:name="Transform Message" doc:id="d0834e2d-a944-425f-9b15-be41edf156b7" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Departure date should be in yyyy-MM-dd format"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1b79ffad-2496-4079-ae6b-050ed0175754" type="VALIDATION:INVALID_BOOLEAN" >
+					<ee:transform doc:name="Transform Message" doc:id="f6cc2922-115c-4fef-893c-1aaa4b9b7f52" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Departure should be greater than 2022-01-01"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
 			</error-handler>
 		</try>
 	</sub-flow>
+
 </mule>

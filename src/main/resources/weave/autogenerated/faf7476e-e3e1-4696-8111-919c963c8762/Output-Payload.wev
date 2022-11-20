@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_faf7476e_e3e1_4696_8111_919c963c8762_Output_Payload = Array<{  departureTime: String,   arrivalTime: String,   sourceAirport: {    airportName: String,     airportLocation: String,     airportCode?: Number,     _?: Any  },   scheduleId?: Number,   destinationAirport: {    airportName: String,     airportLocation: String,     airportCode?: Number,     _?: Any  },   _?: Any}>
+
