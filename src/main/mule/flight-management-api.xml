@@ -133,16 +133,7 @@ output application/json
                 <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Booking updated"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="modifyBooking" doc:id="e54e199d-31ec-43d8-98b8-06ab19d04ea1" name="modifyBooking" />
     </flow>
     <flow name="put:\api\flights\modifyFlight\(flightNumber):application\json:flight-management-api-config">
         <ee:transform>
@@ -207,7 +198,7 @@ output application/json
                 <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <flow-ref doc:name="deleteBooking" doc:id="15f1e945-a010-4db1-93d8-dca17efa9e31" name="deleteBooking" />
+		<flow-ref doc:name="deleteBooking" doc:id="b71144f1-39be-41d2-a693-2cbd1d3f2971" name="deleteBooking" />
     </flow>
     <flow name="delete:\api\flights\deleteByFno\(flightNumber):flight-management-api-config">
         <ee:transform>
@@ -417,22 +408,70 @@ output application/json
                 <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="9c405773-4d4d-4407-9ec2-ffd55ca84074">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  message: "Booking patched"
+	"bookingId": vars.bookingId,
+	"user":
+	{
+		"id": attributes.queryParams.userID,
+		"userType": "empty",
+		"userName": "empty",
+		"userPassword": "empty",
+		"userPhone": 0,
+		"email": "empty"
+		
+	},
+	"bookingDate": "1970-01-01T00:00:00",
+	"passengerList": payload map {
+		pnrNumber: $.pnrNumber,
+		passengerName: $.passengerName,
+		passengerAge: $.passengerAge,
+		passengerUIN: $.passengerUIN,
+		luggage: $.luggage
+	},
+	
+	"ticketCost": 0,
+	"flight":
+	{
+	"sfid" : attributes.queryParams.sfid,
+    "availableSeats": 0,
+    "flight" : {
+    "carrierName": "empty",
+    "flightModel": "empty",
+    "flightNumber": 0,
+    "seatCapacity": 0
+    },
+    "schedule": {
+    "arrivalTime": "1970-01-01T00:00:00",
+    "departureTime": "1970-01-01T00:00:00",
+    "destinationAirport": {
+      "airportCode": 0,
+      "airportLocation": "empty",
+      "airportName": "empty",
+    },
+    "sid": 0,
+    "sourceAirport": {
+      "airportCode": 0,
+      "airportLocation": "empty",
+      "airportName": "empty",
+    }
+  }
+	},
+	"noOfPassengers": attributes.queryParams.noOfPassengers 	
 }]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="patchBooking" doc:id="14c102c1-512a-464c-8af9-97490c7cdf58" name="patchBooking" />
     </flow>
     <flow name="get:\api\airport\showAllAirports:flight-management-api-config">
         <flow-ref doc:name="showAllAirports" doc:id="e56b35f7-6d08-4837-af1b-1c3dc17b0eb4" name="showAllAirports" />
     </flow>
     <flow name="get:\api\booking\showAllBookings:flight-management-api-config">
-        <flow-ref doc:name="showAllBookings" doc:id="6a0814c2-f2bc-4d87-9337-350d37802617" name="showAllBookings" />
+		<flow-ref doc:name="showAllBookings" doc:id="312cbaa9-c436-4814-85a4-d41b2159cc35" name="showAllBookings" />
     </flow>
     <flow name="get:\api\flights\showAllFlights:flight-management-api-config">
 		<flow-ref doc:name="showAllFlights" doc:id="8c9001b3-5cf3-4dec-9662-8734b57feb55" name="showAllFlights"/>
@@ -529,7 +568,7 @@ output application/json
                 <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <flow-ref doc:name="showBookingById" doc:id="00d4e9e3-e94e-47e7-9190-7fe98f7e79f4" name="showBookingById" />
+		<flow-ref doc:name="showBookingById" doc:id="e3a52c32-a564-4766-9e1c-ee19181e4bd6" name="showBookingById" />
     </flow>
     <flow name="get:\api\passenger\showById\(pnrNumber):flight-management-api-config">
         <ee:transform>
@@ -593,7 +632,7 @@ output application/json
                 <ee:set-variable variableName="sfid">attributes.uriParams.'sfid'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <flow-ref doc:name="showBookingBySfid" doc:id="414c2692-9993-4bae-9fdd-169c4a786f3b" name="showBookingBySfid" />
+		<flow-ref doc:name="showBookingBySfid" doc:id="ad4a0436-9f3d-4166-a81b-d161dfefbe0e" name="showBookingBySfid" />
     </flow>
     <flow name="get:\api\schedule\showBySource\(airportName):flight-management-api-config">
         <ee:transform>
@@ -609,26 +648,13 @@ output application/json
                 <ee:set-variable variableName="passengerUIN">attributes.uriParams.'passengerUIN'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  pnrNumber: 101,
-  passengerName: "Sahil",
-  passengerAge: 22,
-  passengerUIN: 123456789012,
-  luggage: 9.75
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showByPassengerUIN" doc:id="ec2611bf-9240-48da-b06c-53da4b55cbea" name="showByPassengerUIN"/>
     </flow>
     <flow name="post:\api\airport\addAirport:application\json:flight-management-api-config">
         <flow-ref doc:name="addAirport" doc:id="68d52a70-b804-4d4d-b012-663414c9bc63" name="addAirport" />
     </flow>
     <flow name="post:\api\booking\addBooking:application\json:flight-management-api-config">
-        <flow-ref doc:name="addBooking" doc:id="aefc6c83-60e5-4b20-b764-a97bff510cdf" name="addBooking"/>
+		<flow-ref doc:name="addBooking" doc:id="4c12e106-61a8-4b02-aedd-fd8728c3b5e9" name="addBooking" />
     </flow>
     <flow name="post:\api\flights\addFlight:application\json:flight-management-api-config">
 		<flow-ref doc:name="addFlight" doc:id="8215b9f6-264c-4195-9ced-e97021a809cc" name="addFlight"/>
