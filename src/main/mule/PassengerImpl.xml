@@ -15,7 +15,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			<validation:is-number doc:name="PNR is number" doc:id="bab0a723-3a8e-4f1b-b1f3-3ef521a3f905" value="#[vars.pnrNumber]" numberType="LONG">
 			<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 		</validation:is-number>
-			<http:request method="GET" doc:name="Request" doc:id="7d10c0f8-18e3-4a67-8905-b795bc8e9527" config-ref="HTTP_Request_configuration" path="/passenger/showByPnrNumber/{pnr}">
+			<http:request method="GET" doc:name="showByPnrNumber" doc:id="7d10c0f8-18e3-4a67-8905-b795bc8e9527" config-ref="HTTP_Request_configuration" path="/passenger/showByPnrNumber/{pnr}">
 			<error-mapping sourceType="HTTP:NOT_FOUND" targetType="PASSENGER:NOT_FOUND" />
 			<http:uri-params><![CDATA[#[output application/java
 ---
@@ -29,7 +29,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 		<try doc:name="Try" doc:id="420b1b97-8e5f-47fc-8ae0-379ec78ce840" >
 			<set-variable value="#[vars.passengerName]" doc:name="NAME" doc:id="309c20c3-7631-4610-89a6-6c76e4783e17" variableName="data"/>
 			<validation:is-not-blank-string doc:name="Name is not blank string" doc:id="a0a99200-2f8e-4c2b-8a74-d2a013e02949" value="#[vars.passengerName]"/>
-			<http:request method="GET" doc:name="Request" doc:id="d454eba6-db71-41a0-867c-a59d6a4d2976" config-ref="HTTP_Request_configuration" path="/passenger/showByPassengerName/{name}">
+			<http:request method="GET" doc:name="showByPassengerName" doc:id="d454eba6-db71-41a0-867c-a59d6a4d2976" config-ref="HTTP_Request_configuration" path="/passenger/showByPassengerName/{name}">
 				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="PASSENGER:NOT_FOUND" />
 				<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -47,6 +47,34 @@ output application/json
 {
 	"Message": "Passenger name should not be blank"
 	}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="showByPassengerUIN" doc:id="4f959d8b-7da7-4310-8fc3-65f97e7a0247" >
+		<try doc:name="Try" doc:id="22f1a01d-643f-418b-96c2-4941feaec153" >
+			<set-variable value="#[vars.passengerUIN]" doc:name="UIN" doc:id="b117839f-40a7-4189-8f51-924927108450" variableName="data"/>
+			<validation:is-number numberType="LONG" doc:name="UIN is number" doc:id="ac15539c-d3ba-495c-9c41-06fb0deeeffc" value="#[vars.passengerUIN]"/>
+			<http:request method="GET" doc:name="showByPassengerUIN" doc:id="774e45bb-039d-46d7-8d18-093178f34b67" config-ref="HTTP_Request_configuration" path="/passenger/showByPassengerUIN/{uin}">
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="PASSENGER:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"uin" : vars.passengerUIN
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="897b83dd-f6f3-4508-bad8-79fc226dd76d" type="VALIDATION:INVALID_NUMBER">
+					<ee:transform doc:name="Transform Message" doc:id="7d3d0e76-33f9-486b-9678-2827a897fd12" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Passenger UIN should be a number"
+}]]></ee:set-payload>
 						</ee:message>
 					</ee:transform>
 				</on-error-propagate>
