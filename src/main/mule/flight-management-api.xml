@@ -175,16 +175,7 @@ output application/json
                 <ee:set-variable variableName="sfid">attributes.uriParams.'sfid'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "ScheduledFlight updated"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="modifySchFlights" doc:id="d3956659-bdf0-4cb7-b780-a651eb8c4c47" name="modifySchFlights" />
     </flow>
     <flow name="put:\api\schedule\modifySchedule\(scheduleId):application\json:flight-management-api-config">
         <ee:transform>
@@ -249,16 +240,7 @@ output application/json
                 <ee:set-variable variableName="sfid">attributes.uriParams.'sfid'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "ScheduledFlight deleted"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="deleteSchFlight" doc:id="974f7c72-db4e-405d-a575-5b2dc03141b8" name="deleteSchFlight" />
     </flow>
     <flow name="delete:\api\schedule\deleteSchedule\(scheduleId):flight-management-api-config">
         <ee:transform>
@@ -340,16 +322,40 @@ output application/json
                 <ee:set-variable variableName="sfid">attributes.uriParams.'sfid'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="229b5f1a-0e09-4772-89d5-4267d470c016" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  message: "ScheduledFlight patched"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+	"sfid" : vars.sfid,
+	"availableSeats": attributes.queryParams.availableSeats default 0,
+	"flight" : {
+    "carrierName": "empty",
+    "flightModel": "empty",
+    "flightNumber": attributes.queryParams.flightId default 0,
+    "seatCapacity": 0
+    }, 
+    "schedule": {
+    "arrivalTime": "1970-01-01T00:00:00",
+    "departureTime": "1970-01-01T00:00:00",
+    "destinationAirport": {
+      "airportCode": 0,
+      "airportLocation": "empty",
+      "airportName": "empty",
+    },
+    "sid": 0,
+    "sourceAirport": {
+      "airportCode": 0,
+      "airportLocation": "empty",
+      "airportName": "empty",
+    }
+  }
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="patchSchFlight" doc:id="854b480c-65b0-4746-b3f5-b15e0c4fcd14" name="patchSchFlight" />
     </flow>
     <flow name="patch:\api\schedule\patchSchedule\(scheduleId):flight-management-api-config">
         <ee:transform>
@@ -435,7 +441,7 @@ output application/json
 		<flow-ref doc:name="showAllPassenger" doc:id="e2364d6e-4110-4cf5-9833-73734e6e4637" name="showAllPassenger"/>
     </flow>
 	<flow name="get:\api\scheduledflight\showAllSchFlights:flight-management-api-config">
-		<flow-ref doc:name="showAllSchFlights" doc:id="ad3522f2-e11a-4ac5-8cf2-d471edb1f7c8" name="showAllSchFlights"/>
+		<flow-ref doc:name="showAllSchFlights" doc:id="c9bcae1f-9b8d-4ac1-9ea4-5e1508405ebe" name="showAllSchFlights" />
     </flow>
     <flow name="get:\api\schedule\showAllSchedules:flight-management-api-config">
         <flow-ref doc:name="showAllSchedules" doc:id="54a0f8c3-6e07-4b9f-8322-c64c4c156ff6" name="showAllSchedules" />
@@ -451,7 +457,7 @@ output application/json
                 <ee:set-variable variableName="date">attributes.uriParams.'date'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-		<flow-ref doc:name="showSchByAirport" doc:id="d6ca301a-e569-4ddd-9903-2c164f1e4597" name="showSchByAirport"/>
+		<flow-ref doc:name="showSchByAirport" doc:id="c6a5b5fe-1ca2-422b-8f97-4df0958d1e4e" name="showSchByAirport" />
     </flow>
     <flow name="get:\api\schedule\showByArrival\(arrivalDate):flight-management-api-config">
         <ee:transform>
@@ -499,7 +505,7 @@ output application/json
                 <ee:set-variable variableName="flightNumber">attributes.uriParams.'flightNumber'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-		<flow-ref doc:name="showByFno" doc:id="e534bd36-9ba0-4de7-b5e5-325a85be8107" name="showByFno"/>
+		<flow-ref doc:name="showByFno" doc:id="a10c27be-d3a1-4021-afe3-7236fd28de96" name="showByFno" />
     </flow>
     <flow name="get:\api\flights\showByFno\(flightNumber):flight-management-api-config">
         <ee:transform>
@@ -640,7 +646,7 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="post:\api\scheduledflight\addSchFlight:application\json:flight-management-api-config">
-		<flow-ref doc:name="addSchFlight" doc:id="20f79f22-3196-4e8e-9d56-e9283dfbbdaa" name="addSchFlight"/>
+		<flow-ref doc:name="addSchFlight" doc:id="218f2083-a3f8-485a-8581-389efd1669a0" name="addSchFlight" />
     </flow>
     <flow name="post:\api\schedule\addSchedule:application\json:flight-management-api-config">
 		<flow-ref doc:name="addSchedule" doc:id="b3b6a8ca-f135-450d-b860-c86acf929dfa" name="addSchedule"/>
