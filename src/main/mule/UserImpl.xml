@@ -108,7 +108,7 @@ output application/json
 			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="85da8237-6108-4bbc-945d-3006dc726c0c" value="#[vars.userId]" >
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
-			<http:request method="PATCH" doc:name="patchAirport" doc:id="470ac5ae-9924-4e46-90f8-3a31ebac4a22" config-ref="HTTP_Request_configuration" path="/user/patchUser/{userId}" >
+			<http:request method="PATCH" doc:name="patchUser" doc:id="470ac5ae-9924-4e46-90f8-3a31ebac4a22" config-ref="HTTP_Request_configuration" path="/user/patchUser/{userId}" >
 				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="USER:NOT_FOUND" />
 				<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -116,11 +116,32 @@ output application/json
 	"userId" : vars.userId
 }]]]></http:uri-params>
 			</http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="8e54cdbb-7957-4608-988b-7dde8f771690" type="HTTP:INTERNAL_SERVER_ERROR" >
+					<ee:transform doc:name="Transform Message" doc:id="c59570e2-0a9b-40c3-867c-f206244e5a85" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Invalid data to patch a User Account" 
+}]]></ee:set-payload>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+							<ee:set-variable variableName="message" ><![CDATA["Not Found"]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
 		</try>
 	</sub-flow>
 	<sub-flow name="addUser" doc:id="f9e13548-a3e1-4ff7-aec0-02f6de316f5f" >
 		<try doc:name="Try" doc:id="8881817a-b11e-4df8-8c42-17a2639d1a9e" >
 			<validation:is-not-blank-string doc:name="Name not blank string" doc:id="bea50b17-4e51-470b-95e0-b7e3a422f576" value="#[payload.userName]" />
+			<validation:is-not-blank-string doc:name="UserType not blank string" doc:id="344ddcf3-7cac-436a-8460-b999fc35ef8e" value="#[payload.userType]" />
+			<validation:is-not-blank-string doc:name="Password not blank string" doc:id="c5a8cc9c-dd42-4ace-80a3-3b933f67913a" value="#[payload.userPassword]" />
+			<validation:is-not-blank-string doc:name="email not blank string" doc:id="c998f9df-61d5-4d08-9a2e-d93affdb4c2f" value="#[payload.email]" />
 			<validation:is-email doc:name="Is email" doc:id="dc996329-fd23-4c33-80fd-e1d06ba7f368" email="#[payload.email]" />
 			<validation:matches-regex doc:name="Matches regex" doc:id="6015f76a-3d21-4fb4-92be-63c07daf6409" value="#[payload.userPhone]" regex="^[0-9]{10}$" />
 			<error-handler >
@@ -148,7 +169,7 @@ output application/json
 						</ee:message>
 					</ee:transform>
 				</on-error-propagate>
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="83b4b38d-53ff-4e67-b9bf-772076f20e40" type="VALIDATION:MISMATCH" >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="83b4b38d-53ff-4e67-b9bf-772076f20e40" type="VALIDATION:MISMATCH" >
 					<ee:transform doc:name="Transform Message" doc:id="c2daaf28-8870-41d1-b696-5042b81180dc" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0
@@ -163,7 +184,6 @@ output application/json
 			</error-handler>
 		</try>
 		<http:request method="POST" doc:name="addUser" doc:id="128f77c1-2e03-4f02-9194-7f210363073d" config-ref="HTTP_Request_configuration" path="/user/addUser" >
-			<error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="USER:INTERNAL_SERVER_ERROR" />
 		</http:request>
 	</sub-flow>
 	<sub-flow name="deleteUser" doc:id="04b619d7-388e-44f3-953e-842ced81451c" >
@@ -196,11 +216,12 @@ output application/json
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
 			<validation:matches-regex doc:name="Matches regex" doc:id="65e13fb8-172c-493c-8bad-32879ed4f464" value="#[payload.userPhone]" regex="^[0-9]{10}$" />
-			<validation:is-not-blank-string doc:name="Name not blank string" doc:id="9f7ae451-6109-4d4b-b1f1-47f31a5345d6" value="#[payload.userName ++ payload.email ++ payload.userType ++ payload.userPassword]" />
+			<validation:is-not-blank-string doc:name="email not blank string" doc:id="9f7ae451-6109-4d4b-b1f1-47f31a5345d6" value="#[payload.email]" />
+			<validation:is-not-blank-string doc:name="Password not blank string" doc:id="376916f2-7579-4487-9455-d0ad09d6bb77" value="#[payload.userPassword]" />
+			<validation:is-not-blank-string doc:name="Type not blank string" doc:id="31643874-8886-4c6f-b98b-b9cf7d172c76" value="#[payload.userType]" />
+			<validation:is-not-blank-string doc:name="Name not blank string" doc:id="3f4add35-5c95-4b11-b705-e04be2483aff" value="#[payload.userName]" />
 			<validation:is-email doc:name="Is email" doc:id="035faa73-f199-4267-a7d4-32bae8ef3f7b" email="#[payload.email]" />
 			<http:request method="PUT" doc:name="modifyUser" doc:id="629d282a-a4f3-41fb-83af-557de4e5f9fc" config-ref="HTTP_Request_configuration" path="/user/modifyUser/{userId}" >
-				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="USER:NOT_FOUND" />
-				<error-mapping sourceType="HTTP:INTERNAL_SERVER_ERROR" targetType="USER:INTERNAL_SERVER_ERROR" />
 				<http:uri-params ><![CDATA[#[output application/java
 ---
 {
