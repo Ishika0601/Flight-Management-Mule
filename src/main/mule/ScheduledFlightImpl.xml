@@ -14,13 +14,13 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="addSchFlight" doc:id="df0ed886-b34e-4154-b33a-59d7f8064662" >
 		<try doc:name="Try" doc:id="6986a123-75e4-4889-bb17-f5545ac5c3b0" >
 			<validation:is-true doc:name="Is seatCap more than avlSeats" doc:id="b0b68ec1-8407-4abf-a4d3-eacbdedf58b9" expression="#[payload.flight.seatCapacity &gt; payload.availableSeats and payload.availableSeats &gt; 0]" />
-			<validation:is-true doc:name="Departure and Arrival time valid" doc:id="676e6eb3-cb53-454d-a22d-fa1e182cd760" expression="#[(payload.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) and (payload.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]">
+			<validation:is-true doc:name="Departure and Arrival time valid" doc:id="676e6eb3-cb53-454d-a22d-fa1e182cd760" expression="#[(payload.schedule.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) and (payload.schedule.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]">
 				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULEDFLIGHT:INVALID_TIME" />
 			</validation:is-true>
-			<validation:is-true doc:name="Source and destination not same" doc:id="6852ebd1-171f-4a7b-95c2-434ab241a7e7" expression="#[payload.sourceAirport.airportCode != payload.destinationAirport.airportCode]">
+			<validation:is-true doc:name="Source and destination not same" doc:id="6852ebd1-171f-4a7b-95c2-434ab241a7e7" expression="#[payload.schedule.sourceAirport.airportCode != payload.schedule.destinationAirport.airportCode]">
 				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULEDFLIGHT:INVALID_SRC&amp;DST" />
 			</validation:is-true>
-			<validation:is-true doc:name="Arrival greater than Departure" doc:id="20ed9640-bac9-4865-8e15-605fc8b04d11" expression="#[(payload.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) &gt; (payload.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]">
+			<validation:is-true doc:name="Arrival greater than Departure" doc:id="20ed9640-bac9-4865-8e15-605fc8b04d11" expression="#[(payload.schedule.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) &gt; (payload.schedule.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]">
 				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULEDFLIGHT:INVALID_ARR&amp;DEP" />
 			</validation:is-true>
 			<http:request method="POST" doc:name="addSchFlight" doc:id="88d24eec-0b98-4c51-8dfb-cdaf7d02adff" config-ref="HTTP_Request_configuration" path="/scheduledflight/addSchFlight" />
@@ -155,7 +155,7 @@ output application/json
 output application/json
 ---
 {
-	"message": "Arrival date should be in yyyy-MM-dd format"
+	"message": "Date should be in yyyy-MM-dd format"
 }]]></ee:set-payload>
 						</ee:message>
 					</ee:transform>
