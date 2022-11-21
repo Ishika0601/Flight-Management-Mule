@@ -336,6 +336,20 @@ output application/json
 	"scheduleId" : vars.scheduleId
 }]]]></http:uri-params>
 			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="798c22f2-c7a0-42b0-9588-7b2ac37c2f17" type="HTTP:INTERNAL_SERVER_ERROR">
+					<ee:transform doc:name="Transform Message" doc:id="72a2ff74-4812-4bfd-b44d-1c836059cafc" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Invalid schedule data given for patch"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
 		</try>
 	</sub-flow>
 
