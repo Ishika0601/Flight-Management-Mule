@@ -108,7 +108,7 @@ output application/json
 					<ee:transform doc:name="Transform Message" doc:id="6e375501-9ae8-45b6-b082-167ee84ccf05" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
 {
 	message: "seat capacity should be in between 30 and 250"
@@ -171,7 +171,7 @@ output application/json
 					<ee:transform doc:name="Transform Message" doc:id="002bd2fa-aa87-4d21-9f03-7e3d8e0bdcf4" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0
-output application/java
+output application/json
 ---
 {
 	message: "seat capacity should be in between 30 and 250"
