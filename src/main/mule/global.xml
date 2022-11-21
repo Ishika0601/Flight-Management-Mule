@@ -122,6 +122,19 @@ output application/json
 				</ee:message>
 			</ee:transform>
 		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="09f7ef5c-c6ee-4755-9ab7-68ca1f9c011f" type="FLIGHT:NOT_FOUND">
+			<ee:transform doc:name="Transform Message" doc:id="0df1a249-1983-47ed-98c7-227880fe93bf" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "Flight not Found with " ++ vars.data as String
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-continue>
 	
 </error-handler>
+
 </mule>

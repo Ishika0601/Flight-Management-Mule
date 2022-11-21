@@ -150,16 +150,7 @@ output application/json
                 <ee:set-variable variableName="flightNumber">attributes.uriParams.'flightNumber'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Flight updated"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="modifyFlight" doc:id="e53339b6-af3d-4714-97ba-61cd47b776f8" name="modifyFlight"/>
     </flow>
     <flow name="put:\api\passenger\modifyPassenger\(pnrNumber):application\json:flight-management-api-config">
         <ee:transform>
@@ -233,16 +224,7 @@ output application/json
                 <ee:set-variable variableName="flightNumber">attributes.uriParams.'flightNumber'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Flight deleted"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="deleteFlight" doc:id="ced97eac-2527-4cdd-8add-6f6adb2fdb9c" name="deleteFlight"/>
     </flow>
     <flow name="delete:\api\passenger\deletePassenger\(pnrNumber):flight-management-api-config">
         <ee:transform>
@@ -326,10 +308,14 @@ output application/json
 output application/json
 ---
 {
-  message: "Flight patched"
+ "flightNumber": vars.flightNumber,
+ "carrierName":  "empty",
+ "flightModel":   "empty",
+ "seatCapacity": attributes.queryParams.seatCapacity default 0
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
+		<flow-ref doc:name="patchFlight" doc:id="786db60c-7e4b-4dee-939c-ba03dae77e12" name="patchFlight"/>
     </flow>
     <flow name="patch:\api\passenger\patchPassenger\(pnrNumber):flight-management-api-config">
         <ee:transform>
@@ -443,27 +429,7 @@ output application/json
         <flow-ref doc:name="showAllBookings" doc:id="6a0814c2-f2bc-4d87-9337-350d37802617" name="showAllBookings" />
     </flow>
     <flow name="get:\api\flights\showAllFlights:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    carrierName: "Indigo",
-    flightModel: "Jet",
-    flightNumber: 10001,
-    seatCapacity: 100
-  }, 
-  {
-    carrierName: "SpiceJet",
-    flightModel: "Boeing",
-    flightNumber: 10002,
-    seatCapacity: 120
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showAllFlights" doc:id="8c9001b3-5cf3-4dec-9662-8734b57feb55" name="showAllFlights"/>
     </flow>
     <flow name="get:\api\passenger\showAllPassengers:flight-management-api-config">
 		<flow-ref doc:name="showAllPassenger" doc:id="e2364d6e-4110-4cf5-9833-73734e6e4637" name="showAllPassenger"/>
@@ -501,27 +467,7 @@ output application/json
                 <ee:set-variable variableName="carrierName">attributes.uriParams.'carrierName'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    carrierName: "Indigo",
-    flightModel: "Jet",
-    flightNumber: 10001,
-    seatCapacity: 100
-  }, 
-  {
-    carrierName: "SpiceJet",
-    flightModel: "Boeing",
-    flightNumber: 10002,
-    seatCapacity: 120
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showByCarrierName" doc:id="fc0426e9-82ff-4ee2-90b3-b5da32170362" name="showByCarrierName"/>
     </flow>
     <flow name="get:\api\schedule\showByDeparture\(departureDate):flight-management-api-config">
         <ee:transform>
@@ -561,19 +507,7 @@ output application/json
                 <ee:set-variable variableName="flightNumber">attributes.uriParams.'flightNumber'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-		<ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  carrierName: "Indigo",
-  flightModel: "Jet",
-  flightNumber: 10001,
-  seatCapacity: 100
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showByFno" doc:id="3096e57e-1178-44ce-a6e9-e3b9b78b81ab" name="showByFno"/>
     </flow>
     <flow name="get:\api\airport\showById\(airportCode):flight-management-api-config">
         <ee:transform>
@@ -691,16 +625,7 @@ output application/json
         <flow-ref doc:name="addBooking" doc:id="aefc6c83-60e5-4b20-b764-a97bff510cdf" name="addBooking"/>
     </flow>
     <flow name="post:\api\flights\addFlight:application\json:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Flight added"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="addFlight" doc:id="8215b9f6-264c-4195-9ced-e97021a809cc" name="addFlight"/>
     </flow>
     <flow name="post:\api\passenger\addPassenger:application\json:flight-management-api-config">
         <ee:transform>
