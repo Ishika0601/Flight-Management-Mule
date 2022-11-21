@@ -14,6 +14,15 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="addSchFlight" doc:id="df0ed886-b34e-4154-b33a-59d7f8064662" >
 		<try doc:name="Try" doc:id="6986a123-75e4-4889-bb17-f5545ac5c3b0" >
 			<validation:is-true doc:name="Is seatCap more than avlSeats" doc:id="b0b68ec1-8407-4abf-a4d3-eacbdedf58b9" expression="#[payload.flight.seatCapacity &gt; payload.availableSeats and payload.availableSeats &gt; 0]" />
+			<validation:is-true doc:name="Departure and Arrival time valid" doc:id="676e6eb3-cb53-454d-a22d-fa1e182cd760" expression="#[(payload.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) and (payload.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]">
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULEDFLIGHT:INVALID_TIME" />
+			</validation:is-true>
+			<validation:is-true doc:name="Source and destination not same" doc:id="6852ebd1-171f-4a7b-95c2-434ab241a7e7" expression="#[payload.sourceAirport.airportCode != payload.destinationAirport.airportCode]">
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULEDFLIGHT:INVALID_SRC&amp;DST" />
+			</validation:is-true>
+			<validation:is-true doc:name="Arrival greater than Departure" doc:id="20ed9640-bac9-4865-8e15-605fc8b04d11" expression="#[(payload.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) &gt; (payload.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]">
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULEDFLIGHT:INVALID_ARR&amp;DEP" />
+			</validation:is-true>
 			<http:request method="POST" doc:name="addSchFlight" doc:id="88d24eec-0b98-4c51-8dfb-cdaf7d02adff" config-ref="HTTP_Request_configuration" path="/scheduledflight/addSchFlight" />
 			<error-handler >
 				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="cc953abc-4a7d-424d-b080-c7454ff122be" type="VALIDATION:INVALID_BOOLEAN" >
@@ -28,15 +37,48 @@ output application/json
 						</ee:message>
 					</ee:transform>
 				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c06d5347-2e0d-4aea-8e0e-d5c620f19619" type="SCHEDULEDFLIGHT:INVALID_TIME" >
+					<ee:transform doc:name="Transform Message" doc:id="4694e34a-f951-4ba3-a468-ea642e8f3141" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Arrival time or departure time is invalid"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d7ae4827-05bf-44b3-9882-6647f7749899" type="SCHEDULEDFLIGHT:INVALID_SRC&amp;DST" >
+					<ee:transform doc:name="Transform Message" doc:id="df59be39-9ed0-4e31-aeba-2d46308b69c8" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Source airport and destination airport cannot be same"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9dea00f9-8fb2-477b-8246-fdea0045d705" type="SCHEDULEDFLIGHT:INVALID_ARR&amp;DEP" >
+					<ee:transform doc:name="Transform Message" doc:id="d9f9c55e-e49d-4599-b14e-9f96603c332a" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Arrival time should be greater than departure time"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
 			</error-handler>
 		</try>
 	</sub-flow>
 	<sub-flow name="showByFno" doc:id="c8c6a349-4748-4a4a-8701-30bd6498a748" >
 		<try doc:name="Try" doc:id="7610aa59-3df8-4516-8490-f40a5ab6bf77" >
 			<set-variable value="#[vars.flightNumber]" doc:name="Set Variable" doc:id="26d6cc6a-d74f-4746-8060-bae15cd78a60" variableName="data" />
-			<validation:is-not-null doc:name="Fno not null" doc:id="62fedf22-084e-45bb-8a4d-423871685c97" value="#[vars.flightNumber]" >
-				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
-			</validation:is-not-null>
 			<validation:is-number numberType="LONG" doc:name="Fno is number" doc:id="d4e9f8a8-718e-491a-a3b1-b2ef4dfeaa72" value="#[vars.flightNumber]" >
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
@@ -52,7 +94,14 @@ output application/json
 	</sub-flow>
 	<sub-flow name="showSchByAirport" doc:id="bf8abfb2-3c0f-4b06-a87e-92cde462bf62" >
 		<try doc:name="Try" doc:id="70ece816-f0d7-4d9c-b728-7ddff6aed374" >
-			<validation:is-true doc:name="Is src &amp; desc not same" doc:id="d354c862-4e4e-409a-ac9f-5cbea19b2613" expression="#[vars.src != vars.dsc]" />
+			<validation:is-not-blank-string doc:name="Source not blank string" doc:id="c868b0a9-f2b4-4d3d-8aa4-892a55166599" value="#[vars.src]" />
+			<validation:is-not-blank-string doc:name="Destination not blank string" doc:id="acb01f2e-a93d-4807-b5c6-aad58580c7c5" value="#[vars.dsc]" />
+			<validation:is-not-blank-string doc:name="Date not blank string" doc:id="b0b824f5-6324-4fcc-ac4a-25875385c95d" value="#[vars.date]" />
+			<validation:is-true doc:name="Is src &amp; dsc not same" doc:id="d354c862-4e4e-409a-ac9f-5cbea19b2613" expression='#[vars.src != vars.dsc]' />
+			<validation:is-time doc:name="Date format" doc:id="99c92eb1-9d0b-4ff9-9cb8-35069d03a258" time="#[vars.date]" pattern="yyyy-MM-dd" />
+			<validation:is-true doc:name="Date greater than todays date" doc:id="ae5e5122-2a9e-4413-acba-3316395a7740" expression='#[vars.date as Date {format:"yyyy-MM-dd"} &gt; now() as Date {format:"yyyy-MM-dd"}]'>
+				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULEDFLIGHTDATE:INVALID_BOOLEAN" />
+			</validation:is-true>
 			<http:request method="GET" doc:name="showSchByAirport" doc:id="c4face12-2f49-412e-90a8-ca71dafc11ac" config-ref="HTTP_Request_configuration" path="/scheduledflight/showByAirport/{src}/{dsc}/{date}" >
 				<http:uri-params ><![CDATA[#[output application/java
 ---
@@ -75,7 +124,7 @@ output application/json
 						</ee:message>
 					</ee:transform>
 				</on-error-propagate>
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="b93076f4-aafe-4e50-a3a4-ac578401c02c" type="HTTP:NOT_FOUND" >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b93076f4-aafe-4e50-a3a4-ac578401c02c" type="HTTP:NOT_FOUND" >
 					<ee:transform doc:name="Transform Message" doc:id="85356ddb-a468-4f8c-893f-59284cdff92e" >
 						<ee:message >
 							<ee:set-payload ><![CDATA[%dw 2.0
@@ -87,15 +136,48 @@ output application/json
 						</ee:message>
 					</ee:transform>
 				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0b2d4d10-a4a4-406d-a2b3-c481c6c1b588" type="VALIDATION:BLANK_STRING" >
+					<ee:transform doc:name="Transform Message" doc:id="c0efe4b1-5791-4b88-a4bc-3a5a78e832d7" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Source name, Destination name and Date cannot be blank."
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="3cef176b-6128-4389-bbbb-d0bf584f1e48" type="VALIDATION:INVALID_TIME" >
+					<ee:transform doc:name="Transform Message" doc:id="555241c5-1746-436c-a504-359d0be81e89" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Arrival date should be in yyyy-MM-dd format"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a289e16c-2ebb-4d24-a088-6cec7fd202c3" type="SCHEDULEDFLIGHTDATE:INVALID_BOOLEAN" >
+					<ee:transform doc:name="Transform Message" doc:id="f06cf194-6c0a-409f-b707-8dc85d918d2e" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Date should be greater than todays date."
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
 			</error-handler>
 		</try>
 	</sub-flow>
 	<sub-flow name="deleteSchFlight" doc:id="aa9c427f-d445-4daa-91b2-a648577920a1" >
 		<try doc:name="Try" doc:id="d5bbca3e-16df-443b-b301-e3d7501f0d07" >
 			<set-variable value="#[vars.sfid]" doc:name="Set Variable" doc:id="dbc2b20c-0a9b-4d01-844c-d430acf91d25" variableName="data" />
-			<validation:is-not-null doc:name="sfId not null" doc:id="f4df3992-3749-4500-84ea-e9004f6f328f" value="#[vars.sfid]" >
-				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
-			</validation:is-not-null>
 			<validation:is-number numberType="LONG" doc:name="sfId is number" doc:id="5f2b3d19-cd28-47b5-9d0e-6cb71a391b27" value="#[vars.sfid]" >
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
@@ -113,9 +195,6 @@ output application/json
 	<sub-flow name="modifySchFlights" doc:id="79d45254-efa5-4fce-ad65-731868351022" >
 		<try doc:name="Try" doc:id="b207f300-2756-4abc-8d66-f40e107459dc" >
 			<set-variable value="#[vars.sfid]" doc:name="Set Variable" doc:id="6019c7cf-4117-42c2-bad6-7e351a042116" variableName="data" />
-			<validation:is-not-null doc:name="sfId not null" doc:id="83f08b0c-ee0b-4677-bffb-ab1673d11853" value="#[vars.sfid]" >
-				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
-			</validation:is-not-null>
 			<validation:is-number numberType="LONG" doc:name="sfId is number" doc:id="766665c3-63b5-4430-8da6-f4b97fd55d56" value="#[vars.sfid]" >
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
@@ -147,9 +226,6 @@ output application/json
 	<sub-flow name="patchSchFlight" doc:id="acc96529-a27b-42af-9217-2d58331df09b" >
 		<try doc:name="Try" doc:id="9c9ae81a-6b83-4db7-bd41-6db38abd3cdb" >
 			<set-variable value="#[vars.sfid]" doc:name="Set Variable" doc:id="64f8d29b-319b-4e9f-afc0-b189d9c3748f" variableName="data" />
-			<validation:is-not-null doc:name="sfId not null" doc:id="74e15e66-5e7f-460c-ab8b-77e80d9fe9dd" value="#[vars.sfid]" >
-				<error-mapping sourceType="VALIDATION:NULL" targetType="ID:NULL" />
-			</validation:is-not-null>
 			<validation:is-number numberType="LONG" doc:name="sfId is number" doc:id="6ff1e2b6-a221-418d-a289-a88ff60927b9" value="#[vars.sfid]" >
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
