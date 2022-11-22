@@ -149,16 +149,7 @@ output application/json
                 <ee:set-variable variableName="pnrNumber">attributes.uriParams.'pnrNumber'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Passenger updated"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="modifyPassenger" doc:id="0c1a5a98-406a-420a-b87c-10cac94f7d14" name="modifyPassenger"/>
     </flow>
     <flow name="put:\api\scheduledflight\modifySchFlight\(sfid):application\json:flight-management-api-config">
         <ee:transform>
@@ -214,16 +205,7 @@ output application/json
                 <ee:set-variable variableName="pnrNumber">attributes.uriParams.'pnrNumber'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Passenger deleted"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="deletePassenger" doc:id="8ed13438-2ac3-4f12-96a2-2da919939335" name="deletePassenger"/>
     </flow>
     <flow name="delete:\api\scheduledflight\deleteSchFlight\(sfid):flight-management-api-config">
         <ee:transform>
@@ -296,16 +278,21 @@ output application/json
                 <ee:set-variable variableName="pnrNumber">attributes.uriParams.'pnrNumber'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+		<ee:transform doc:name="Transform Message" doc:id="00bd6240-74ba-4361-9cda-b4fd8304d089" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
 {
-  message: "Passenger patched"
+	"pnrNumber": vars.pnrNumber,
+	"passengerName": attributes.queryParams.passengerName default "empty",
+	"passengerAge": attributes.queryParams.passengerAge default 0,
+	"passengerUIN": attributes.queryParams.passengerUIN default 0,
+	"luggage": attributes.queryParams.luggage default 0
 }]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="patchPassenger" doc:id="cfae8d9c-b83f-4b04-8080-21a74b18cade" name="patchPassenger"/>
     </flow>
     <flow name="patch:\api\scheduledflight\patchSchFlight\(sfid):flight-management-api-config">
         <ee:transform>
@@ -673,16 +660,7 @@ output application/json
                 <ee:set-variable variableName="bookingId">attributes.uriParams.'bookingId'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Passenger added"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="addPassenger" doc:id="4f10dffc-37a6-4a96-845f-aaea5116ccb8" name="addPassenger"/>
     </flow>
     <flow name="get:\api\airport\showAirportsInXml:flight-management-api-config">
         <flow-ref doc:name="showAirportsInXml" doc:id="9e4d6239-c7fe-4575-844e-9b3fd6697aac" name="showAirportsInXml" />
@@ -730,29 +708,7 @@ output application/json
 		<flow-ref doc:name="showBySourceInXml" doc:id="1c1de874-f111-4833-a7b3-53b9009afb4e" name="showBySourceInXml"/>
     </flow>
     <flow name="get:\api\passenger\showPassengersInXml:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    pnrNumber: 101,
-    passengerName: "Sahil",
-    passengerAge: 22,
-    passengerUIN: 123456789012,
-    luggage: 9.75
-  }, 
-  {
-    pnrNumber: 102,
-    passengerName: "Hemant",
-    passengerAge: 22,
-    passengerUIN: 123456789013,
-    luggage: 10.05
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showAllPassengerInXml" doc:id="6212d72f-aeb1-44d6-b5f2-beab16a8c5e7" name="showAllPassengerInXml"/>
     </flow>
     <flow name="get:\api\user\showUsersInXml:flight-management-api-config">
 		<flow-ref doc:name="showAllUsersInXml" doc:id="b7e5d900-4407-4da6-b381-a2e5a1cdb2e0" name="showAllUsersInXml"/>

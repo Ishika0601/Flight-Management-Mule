@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_a27f8827_c2be_403d_9c50_613ba6787cb3_Output_Payload = Array<{  passengerName: String,   passengerAge: Number,   luggage: Number,   passengerUIN: Number,   pnrNumber: Number,   _?: Any}>
+
