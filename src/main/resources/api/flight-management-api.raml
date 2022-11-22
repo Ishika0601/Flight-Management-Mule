@@ -283,6 +283,34 @@ types:
               application/json:
                 example:
                   message: Schedule not found
+    
+    /showBySourceInXml/{airportName}:
+      get:
+        responses:
+          200:
+            body:
+              application/xml:
+                type: Schedule[]
+                example: !include Examples/ScheduleGetAllExample.raml
+          400:
+            body:
+              application/json:
+                example:
+                  message: Schedule not found
+
+    /showByDepartureInXml/{departureDate}:
+      get:
+        responses:
+          200:
+            body:
+              application/xml:
+                type: Schedule[]
+                example: !include Examples/ScheduleGetAllExample.raml
+          400:
+            body:
+              application/json:
+                example:
+                  message: Schedule not found
 
   /passenger:
     /showAllPassengers:
@@ -291,6 +319,15 @@ types:
           200:
             body:
               application/json:
+                type: Passenger[]
+                example: !include Examples/PassengerGetAllExample.raml
+
+    /showPassengersInXml:
+      get:
+        responses:
+          200:
+            body:
+              application/xml:
                 type: Passenger[]
                 example: !include Examples/PassengerGetAllExample.raml
 
@@ -418,6 +455,22 @@ types:
           200:
             body:
               application/json:
+                type: User[]
+                example: !include Examples/UserGetAllExample.raml
+
+    /showUsersInXml:
+      get:
+        description: User details
+        queryParameters:
+          type:
+            required: false
+            enum:
+              - Admin
+              - User
+        responses:
+          200:
+            body:
+              application/xml:
                 type: User[]
                 example: !include Examples/UserGetAllExample.raml
 
@@ -634,6 +687,20 @@ types:
               application/json:
                 example:
                   message : ScheduledFlight not found
+    
+    /showByAirportInXml/{src}/{dsc}/{date} :
+      get:
+        responses:
+          200:
+            body:
+              application/xml:
+                type: ScheduledFlight[]
+                example: !include Examples/ScheduledFlightsGetAllExample.raml
+          400:
+            body:
+              application/json:
+                example:
+                  message: Scheduled flight not found
 
   /booking:
     /showAllBookings:
@@ -687,7 +754,20 @@ types:
               application/json:
                 example:
                   message: Booking not found
-                  
+
+    /showBySfidInXml/{sfid}:
+      get:
+        responses:
+          200:
+            body:
+              application/xml:
+                type: Booking[]
+                example: !include Examples/BookingGetAllExample.raml
+          400:
+            body:
+              application/json:
+                example:
+                  message: Booking not found
 
     /modifyBooking/{bookingId}:
       put:
@@ -844,4 +924,18 @@ types:
             body:
               application/json:
                 example:
-                  message: Carrier Name not found             
+                  message: Flight not found
+
+    /showByCarrierInXml/{carrierName}:
+      get:
+        responses:
+          200:
+            body:
+              application/xml:
+                type: Flight[]
+                example: !include Examples/FlightGetAllExample.raml
+          400:
+            body:
+              application/json:
+                example:
+                  message: Flight not found             

@@ -697,6 +697,366 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\api\airport\showAirportsInXml:flight-management-api-config">
-		<flow-ref doc:name="showAirportsInXml" doc:id="9e4d6239-c7fe-4575-844e-9b3fd6697aac" name="showAirportsInXml"/>
+        <flow-ref doc:name="showAirportsInXml" doc:id="9e4d6239-c7fe-4575-844e-9b3fd6697aac" name="showAirportsInXml" />
+    </flow>
+    <flow name="get:\api\scheduledflight\showByAirportInXml\(src)\(dsc)\(date):flight-management-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="src">attributes.uriParams.'src'</ee:set-variable>
+                <ee:set-variable variableName="dsc">attributes.uriParams.'dsc'</ee:set-variable>
+                <ee:set-variable variableName="date">attributes.uriParams.'date'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    sfid: 101,
+    availableSeats: 90,
+    flight: {
+      carrierName: "Indigo",
+      flightModel: "Jet",
+      flightNumber: 10001,
+      seatCapacity: 100
+    },
+    schedule: {
+      sid: 101,
+      sourceAirport: {
+        airportCode: 101,
+        airportName: "Indira Gandhi International Airport",
+        airportLocation: "Delhi"
+      },
+      destinationAirport: {
+        airportCode: 102,
+        airportName: "Chhatrapati Shivaji International Airport",
+        airportLocation: "Mumbai"
+      },
+      arrivalTime: 1668456000000,
+      departureTime: 1668441600000
+    }
+  }, 
+  {
+    sfid: 102,
+    availableSeats: 100,
+    flight: {
+      carrierName: "SpiceJet",
+      flightModel: "Airbus",
+      flightNumber: 10002,
+      seatCapacity: 120
+    },
+    schedule: {
+      sid: 102,
+      sourceAirport: {
+        airportCode: 101,
+        airportName: "Indira Gandhi International Airport",
+        airportLocation: "Delhi"
+      },
+      destinationAirport: {
+        airportCode: 102,
+        airportName: "Chhatrapati Shivaji International Airport",
+        airportLocation: "Mumbai"
+      },
+      arrivalTime: 1668456000000,
+      departureTime: 1668441600000
+    }
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\api\flights\showByCarrierInXml\(carrierName):flight-management-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="carrierName">attributes.uriParams.'carrierName'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    carrierName: "Indigo",
+    flightModel: "Jet",
+    flightNumber: 10001,
+    seatCapacity: 100
+  }, 
+  {
+    carrierName: "SpiceJet",
+    flightModel: "Boeing",
+    flightNumber: 10002,
+    seatCapacity: 120
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\api\schedule\showByDepartureInXml\(departureDate):flight-management-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="departureDate">attributes.uriParams.'departureDate'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    scheduleId: 101,
+    sourceAirport: {
+      airportCode: 101,
+      airportName: "Indira Gandhi International Airport",
+      airportLocation: "Delhi"
+    },
+    destinationAirport: {
+      airportCode: 102,
+      airportName: "Chhatrapati Shivaji International Airport",
+      airportLocation: "Mumbai"
+    },
+    arrivalTime: 1668456000000,
+    departureTime: 1668441600000
+  }, 
+  {
+    scheduleId: 102,
+    sourceAirport: {
+      airportCode: 101,
+      airportName: "Indira Gandhi International Airport",
+      airportLocation: "Delhi"
+    },
+    destinationAirport: {
+      airportCode: 102,
+      airportName: "Chhatrapati Shivaji International Airport",
+      airportLocation: "Mumbai"
+    },
+    arrivalTime: 1668524400000,
+    departureTime: 1668510000000
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\api\booking\showBySfidInXml\(sfid):flight-management-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="sfid">attributes.uriParams.'sfid'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    bookingId: 1000,
+    user: {
+      userType: "Admin",
+      userId: 45,
+      userName: "Rohit",
+      userPassword: "Rohit@45",
+      userPhone: 676,
+      email: "rohitsharma@gmail.com"
+    },
+    bookingDate: 1668196800000,
+    passengerList: [
+      {
+        pnrNumber: 101,
+        passengerName: "Sahil",
+        passengerAge: 22,
+        passengerUIN: 123456789012,
+        luggage: 9.75
+      }
+    ],
+    ticketCost: 10000,
+    flight: {
+      sfid: 101,
+      availableSeats: 90,
+      flight: {
+        carrierName: "Indigo",
+        flightModel: "Jet",
+        flightNumber: 10001,
+        seatCapacity: 100
+      },
+      schedule: {
+        sid: 101,
+        sourceAirport: {
+          airportCode: 101,
+          airportName: "Indira Gandhi International Airport",
+          airportLocation: "Delhi"
+        },
+        destinationAirport: {
+          airportCode: 102,
+          airportName: "Chhatrapati Shivaji International Airport",
+          airportLocation: "Mumbai"
+        },
+        arrivalTime: 1668456000000,
+        departureTime: 1668441600000
+      }
+    },
+    noOfPassengers: 1
+  }, 
+  {
+    bookingId: 1001,
+    user: {
+      userType: "User",
+      userId: 18,
+      userName: "Virat",
+      userPassword: "Virat@18",
+      userPhone: 8282,
+      email: "virat18@gmail.com"
+    },
+    bookingDate: 1668196800000,
+    passengerList: [
+      {
+        pnrNumber: 101,
+        passengerName: "Sahil",
+        passengerAge: 22,
+        passengerUIN: 123456789012,
+        luggage: 9.75
+      }
+    ],
+    ticketCost: 9000,
+    flight: {
+      sfid: 102,
+      availableSeats: 100,
+      flight: {
+        carrierName: "SpiceJet",
+        flightModel: "Airbus",
+        flightNumber: 10002,
+        seatCapacity: 120
+      },
+      schedule: {
+        sid: 102,
+        sourceAirport: {
+          airportCode: 101,
+          airportName: "Indira Gandhi International Airport",
+          airportLocation: "Delhi"
+        },
+        destinationAirport: {
+          airportCode: 102,
+          airportName: "Chhatrapati Shivaji International Airport",
+          airportLocation: "Mumbai"
+        },
+        arrivalTime: 1668456000000,
+        departureTime: 1668441600000
+      }
+    },
+    noOfPassengers: 1
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\api\schedule\showBySourceInXml\(airportName):flight-management-api-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="airportName">attributes.uriParams.'airportName'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    scheduleId: 101,
+    sourceAirport: {
+      airportCode: 101,
+      airportName: "Indira Gandhi International Airport",
+      airportLocation: "Delhi"
+    },
+    destinationAirport: {
+      airportCode: 102,
+      airportName: "Chhatrapati Shivaji International Airport",
+      airportLocation: "Mumbai"
+    },
+    arrivalTime: 1668456000000,
+    departureTime: 1668441600000
+  }, 
+  {
+    scheduleId: 102,
+    sourceAirport: {
+      airportCode: 101,
+      airportName: "Indira Gandhi International Airport",
+      airportLocation: "Delhi"
+    },
+    destinationAirport: {
+      airportCode: 102,
+      airportName: "Chhatrapati Shivaji International Airport",
+      airportLocation: "Mumbai"
+    },
+    arrivalTime: 1668524400000,
+    departureTime: 1668510000000
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\api\passenger\showPassengersInXml:flight-management-api-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    pnrNumber: 101,
+    passengerName: "Sahil",
+    passengerAge: 22,
+    passengerUIN: 123456789012,
+    luggage: 9.75
+  }, 
+  {
+    pnrNumber: 102,
+    passengerName: "Hemant",
+    passengerAge: 22,
+    passengerUIN: 123456789013,
+    luggage: 10.05
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\api\user\showUsersInXml:flight-management-api-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    userType: "Admin",
+    userId: 45,
+    userName: "Rohit",
+    userPassword: "Rohit@45",
+    userPhone: 676,
+    email: "rohitsharma@gmail.com"
+  }, 
+  {
+    userType: "User",
+    userId: 18,
+    userName: "Virat",
+    userPassword: "Virat@18",
+    userPhone: 8282,
+    email: "virat18@gmail.com"
+  }, 
+  {
+    userType: "Admin",
+    userId: 63,
+    userName: "Sky",
+    userPassword: "Sky@63",
+    userPhone: 67872,
+    email: "sky63@gmail.com"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
     </flow>
 </mule>
