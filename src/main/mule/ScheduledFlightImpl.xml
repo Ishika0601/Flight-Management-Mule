@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	</sub-flow>
 	<sub-flow name="addSchFlight" doc:id="df0ed886-b34e-4154-b33a-59d7f8064662" >
 		<try doc:name="Try" doc:id="6986a123-75e4-4889-bb17-f5545ac5c3b0" >
-			<validation:is-true doc:name="Is seatCap more than avlSeats" doc:id="b0b68ec1-8407-4abf-a4d3-eacbdedf58b9" expression="#[payload.flight.seatCapacity &gt; payload.availableSeats and payload.availableSeats &gt; 0]" />
+			<validation:is-true doc:name="Is seatCap more than avlSeats" doc:id="b0b68ec1-8407-4abf-a4d3-eacbdedf58b9" expression="#[payload.flight.seatCapacity &gt;= payload.availableSeats and payload.availableSeats &gt;=0]" />
 			<validation:is-true doc:name="Departure and Arrival time valid" doc:id="676e6eb3-cb53-454d-a22d-fa1e182cd760" expression="#[(payload.schedule.departureTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;}) and (payload.schedule.arrivalTime as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;} &gt; now() as LocalDateTime {format:&quot;yyyy-MM-dd'T'HH:mm:ss&quot;})]">
 				<error-mapping sourceType="VALIDATION:INVALID_BOOLEAN" targetType="SCHEDULEDFLIGHT:INVALID_TIME" />
 			</validation:is-true>
@@ -198,7 +198,7 @@ output application/json
 			<validation:is-number numberType="LONG" doc:name="sfId is number" doc:id="766665c3-63b5-4430-8da6-f4b97fd55d56" value="#[vars.sfid]" >
 				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
 			</validation:is-number>
-			<validation:is-true doc:name="Is seatCap more than avlSeats" doc:id="efbd576e-ef35-41a9-9ec3-6b1edaab169c" expression="#[payload.flight.seatCapacity &gt; payload.availableSeats and payload.availableSeats &gt; 0]" />
+			<validation:is-true doc:name="Is seatCap more than avlSeats" doc:id="efbd576e-ef35-41a9-9ec3-6b1edaab169c" expression="#[payload.flight.seatCapacity &gt;= payload.availableSeats and payload.availableSeats &gt;= 0]" />
 			<http:request method="PUT" doc:name="modifySchFlight" doc:id="96cd381c-2e3a-4edf-96ad-323c4365d39e" config-ref="HTTP_Request_configuration" path="/scheduledflight/modifySchFlight/{sfid}" >
 				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="SCHEDULEDFLIGHT:NOT_FOUND" />
 				<http:uri-params ><![CDATA[#[output application/java

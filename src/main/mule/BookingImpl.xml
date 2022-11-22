@@ -114,6 +114,18 @@ output application/json
 						</ee:message>
 					</ee:transform>
 				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="98dcb409-fae0-4e76-ad0c-9cb70ff461ea" type="HTTP:INTERNAL_SERVER_ERROR" >
+					<ee:transform doc:name="Transform Message" doc:id="5b3fa4b1-f319-49d2-9bff-e9ebf3d573b4" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Invalid data given for modifyBooking."
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
 			</error-handler>
 		</try>
 	</sub-flow>
