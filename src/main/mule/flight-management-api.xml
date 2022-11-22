@@ -768,32 +768,12 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\api\flights\showByCarrierInXml\(carrierName):flight-management-api-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="carrierName">attributes.uriParams.'carrierName'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    carrierName: "Indigo",
-    flightModel: "Jet",
-    flightNumber: 10001,
-    seatCapacity: 100
-  }, 
-  {
-    carrierName: "SpiceJet",
-    flightModel: "Boeing",
-    flightNumber: 10002,
-    seatCapacity: 120
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="523c1fec-77de-4b71-8532-73a58597cf03">
+			<ee:variables>
+				<ee:set-variable variableName="carrierName"><![CDATA[attributes.uriParams.'carrierName']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="showByCarrierInXml" doc:id="87df1763-059d-408b-8930-ca15a00bbe19" name="showByCarrierInXml"/>
     </flow>
     <flow name="get:\api\schedule\showByDepartureInXml\(departureDate):flight-management-api-config">
         <ee:transform>

@@ -9,6 +9,58 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="showAllFlights" doc:id="39ba83b6-ae43-405d-a341-b59af6a35b11" >
 		<http:request method="GET" doc:name="showAllFlights" doc:id="5cf4aaf3-ee22-47e4-aa28-318d68c6b45a" config-ref="HTTP_Request_configuration" path="/flight/showAllFlights"/>
 	</sub-flow>
+	<sub-flow name="showByCarrierInXml" doc:id="0dec35c5-ba5a-49ce-8248-1fc1bbf9a392" >
+		<try doc:name="Try" doc:id="f1d2d04d-ef1b-4050-bf13-b0541dfb7374" >
+			<set-variable value="#[vars.carrierName]" doc:name="Set Variable" doc:id="66f10d58-eff1-4de5-85f6-ea4e31151335" variableName="data" />
+			<validation:is-not-blank-string doc:name="Is not blank string" doc:id="f6794fd9-ef59-4dca-bda7-faf8041096a5" value="#[vars.carrierName]" />
+			<http:request method="GET" doc:name="showByCarrierName" doc:id="d7dfa248-fa60-4fd6-815d-c6a8e3f3520c" config-ref="HTTP_Request_configuration" path="/flight/showByCarrierName/{carrierName}" >
+				<error-mapping sourceType="HTTP:NOT_FOUND" targetType="FLIGHT:NOT_FOUND" />
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"carrierName" : vars.carrierName
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6c5c0937-8c73-4c71-be58-66e34dfb24ef" type="VALIDATION:BLANK_STRING" >
+					<ee:transform doc:name="Transform Message" doc:id="363e76bf-5fa2-4ca7-8896-a250195a9b4d" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "carrier name should not be a blank string"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="39a80c37-d8d5-4904-bfc7-9c26f4402bea">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+flights: {noOfFlights: sizeOf(payload),
+	(payload map (object, index) ->
+	{
+		flight: {
+			number: object.flightNumber,
+	        name: object.carrierName,
+	        model: object.flightModel,
+	        seatcapacity: object.seatCapacity
+		}
+	}
+)
+}
+]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="FlightDWoutput.dwl" variableName="FlightDWoutput" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="fcebf222-e716-4c1a-94db-f46ae9b43ed1" message="#[vars.FlightDWOutput]" />
+	</sub-flow>
 	<sub-flow name="patchFlight" doc:id="e0eb66c5-1295-4e8f-94d7-fe6f6c6366a1" >
 		<try doc:name="Try" doc:id="2b277511-4aae-408c-8a60-6ea134e25c27" >
 			<set-variable value="#[vars.flightNumber]" doc:name="Set Variable" doc:id="ab3564f8-2290-4f74-8ada-b16c26b467a5" variableName="data"/>
