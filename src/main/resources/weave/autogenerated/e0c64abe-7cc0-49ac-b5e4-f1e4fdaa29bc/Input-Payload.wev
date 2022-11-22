@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_e0c64abe_7cc0_49ac_b5e4_f1e4fdaa29bc_Input_Payload = Array<{  departureTime: String,   arrivalTime: String,   sourceAirport: {    airportName: String,     airportLocation: String,     airportCode?: Number,     _?: Any  },   scheduleId?: Number,   destinationAirport: {    airportName: String,     airportLocation: String,     airportCode?: Number,     _?: Any  },   _?: Any}>
+
