@@ -9,6 +9,32 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="showAllAirports" doc:id="e1a7bfe6-a8d1-423d-a624-ba3b3e948aba" >
 		<http:request method="GET" doc:name="showAllAirports" doc:id="7b1a93f9-48d6-4960-8ac8-4a647e7408a2" config-ref="HTTP_Request_configuration" path="/airport/showAllAirports"/>
 	</sub-flow>
+	<sub-flow name="showAirportsInXml" doc:id="6a49e796-8d7a-4cf5-afec-fcec39f5f456" >
+		<http:request method="GET" doc:name="showAllAirports" doc:id="2b0e6a6d-fbf3-4626-ae67-d39d3d13e3d9" config-ref="HTTP_Request_configuration" path="/airport/showAllAirports"/>
+		<ee:transform doc:name="Transform Message" doc:id="c8ce4295-1723-4907-96ac-4e712f8e76f9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+airports: {noOfAirports: sizeOf(payload),
+	(payload map (object, index) ->
+	{
+		airport: {
+			code: object.airportCode,
+			name: object.airportName,
+			location: object.airportLocation
+		}
+	}
+)
+}
+]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="AirportDWOutput.dwl" variableName="AirportDWOutput" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="4bee7cd3-0fc3-4674-bf9e-680060cb03a5" message="#[vars.AirportDWOutput]"/>
+	</sub-flow>
 	<sub-flow name="showAirportById" doc:id="cc100613-f81d-4dc2-a2c9-39f985091972" >
 		<try doc:name="Try" doc:id="d9da1f0c-12d9-44b0-b080-a3afeb1790cb" >
 			<set-variable value="#[vars.airportCode]" doc:name="Set Variable" doc:id="1b5b554e-bad1-4ba7-8ec8-cc0e5e066b5d" variableName="data" />
