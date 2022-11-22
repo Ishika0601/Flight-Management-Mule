@@ -9,6 +9,61 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="showAllBookings" doc:id="3ce36e89-d379-4e9a-97b3-f708a763bf7a" >
 		<http:request method="GET" doc:name="showAllBookings" doc:id="64ff6a92-37bc-4c5a-9202-255ad867558d" config-ref="HTTP_Request_configuration" path="/booking/showAllBookings" />
 	</sub-flow>
+	<sub-flow name="showBookingsBySfidInXML" doc:id="bfcc7a56-8683-4ce8-aae8-a4f7f319ce57" >
+		<try doc:name="Try" doc:id="0fd127a2-61ca-4253-b1ad-f892b8021afa" >
+			<set-variable value="#[vars.sfid]" doc:name="Set Variable" doc:id="c176285a-99d4-44e1-80be-88641cda081d" variableName="data" />
+			<validation:is-number numberType="LONG" doc:name="Id is number" doc:id="0a7ea349-05ee-4b0a-9b20-5a2cb9a071fa" value="#[vars.sfid]" >
+				<error-mapping sourceType="VALIDATION:INVALID_NUMBER" targetType="ID:INVALID_NUMBER" />
+			</validation:is-number>
+			<http:request method="GET" doc:name="showBookingBySfid" doc:id="e32cc963-9d2b-4b60-982d-5eda4e154492" config-ref="HTTP_Request_configuration" path="/booking/showBySfid/{sfid}" >
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"sfid" : vars.sfid
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="bc97f5e9-921b-4fc9-9297-0b42e2af7390" type="HTTP:NOT_FOUND" >
+					<ee:transform doc:name="Transform Message" doc:id="75a2515e-d2ae-4eec-a8be-44d09aaa9592" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No booking found for " ++ vars.sfid as String
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="6313ac3d-11a4-45f2-8666-e36e217fbf08" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+bookings: {noOfScheduledFlights: sizeOf(payload),
+	(payload map (object, index) ->
+	{
+		booking: {
+			bookingId: object.bookingId,
+			user: object.user,
+			bookingDate: object.bookingDate,
+			passengerList: object.passengerList,
+			ticketCost: object.tickerCost,
+			flight: object.flight,
+			noOfPassengers: object.noOfPassengers	
+		}
+	}
+	)
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="BookingDWOutput.dwl" variableName="BookingDWOutput" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a8986377-db3b-426c-ad04-3552ad1a5344" message="#[vars.BookingDWOutput]"/>
+	</sub-flow>
 	<sub-flow name="showBookingById" doc:id="3250ce46-b745-475a-8fa6-ab8221e1a981" >
 		<try doc:name="Try" doc:id="e478d605-62ea-4c34-9fbd-5c171707c673" >
 			<set-variable value="#[vars.bookingId]" doc:name="Set Variable" doc:id="ebf9fc63-b9d9-4f84-bb45-4ad31ae4cb8a" variableName="data" />
