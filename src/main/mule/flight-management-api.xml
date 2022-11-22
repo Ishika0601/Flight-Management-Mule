@@ -707,65 +707,7 @@ output application/json
                 <ee:set-variable variableName="date">attributes.uriParams.'date'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    sfid: 101,
-    availableSeats: 90,
-    flight: {
-      carrierName: "Indigo",
-      flightModel: "Jet",
-      flightNumber: 10001,
-      seatCapacity: 100
-    },
-    schedule: {
-      sid: 101,
-      sourceAirport: {
-        airportCode: 101,
-        airportName: "Indira Gandhi International Airport",
-        airportLocation: "Delhi"
-      },
-      destinationAirport: {
-        airportCode: 102,
-        airportName: "Chhatrapati Shivaji International Airport",
-        airportLocation: "Mumbai"
-      },
-      arrivalTime: 1668456000000,
-      departureTime: 1668441600000
-    }
-  }, 
-  {
-    sfid: 102,
-    availableSeats: 100,
-    flight: {
-      carrierName: "SpiceJet",
-      flightModel: "Airbus",
-      flightNumber: 10002,
-      seatCapacity: 120
-    },
-    schedule: {
-      sid: 102,
-      sourceAirport: {
-        airportCode: 101,
-        airportName: "Indira Gandhi International Airport",
-        airportLocation: "Delhi"
-      },
-      destinationAirport: {
-        airportCode: 102,
-        airportName: "Chhatrapati Shivaji International Airport",
-        airportLocation: "Mumbai"
-      },
-      arrivalTime: 1668456000000,
-      departureTime: 1668441600000
-    }
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showSchByAirportsInXml" doc:id="a4b7d227-8433-4b2e-8271-a4004a2123f8" name="showSchByAirportsInXml"/>
     </flow>
     <flow name="get:\api\flights\showByCarrierInXml\(carrierName):flight-management-api-config">
         <ee:transform>
