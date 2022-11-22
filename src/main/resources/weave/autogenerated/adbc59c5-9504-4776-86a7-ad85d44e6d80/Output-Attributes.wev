@@ -1,0 +1,23 @@
+%dw 2.0
+
+type auto_adbc59c5_9504_4776_86a7_ad85d44e6d80_Output_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| airportName: String |}, 
+  version: String, 
+  localAddress: String
+|}
+

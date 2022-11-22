@@ -743,45 +743,7 @@ output application/json
                 <ee:set-variable variableName="departureDate">attributes.uriParams.'departureDate'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    scheduleId: 101,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: 1668456000000,
-    departureTime: 1668441600000
-  }, 
-  {
-    scheduleId: 102,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: 1668524400000,
-    departureTime: 1668510000000
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showByDepartureInXml" doc:id="b8ffd53b-1d0c-4ef5-b47f-da8c49b95f9f" name="showByDepartureInXml"/>
     </flow>
     <flow name="get:\api\booking\showBySfidInXml\(sfid):flight-management-api-config">
         <ee:transform>
@@ -901,45 +863,7 @@ output application/json
                 <ee:set-variable variableName="airportName">attributes.uriParams.'airportName'</ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    scheduleId: 101,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: 1668456000000,
-    departureTime: 1668441600000
-  }, 
-  {
-    scheduleId: 102,
-    sourceAirport: {
-      airportCode: 101,
-      airportName: "Indira Gandhi International Airport",
-      airportLocation: "Delhi"
-    },
-    destinationAirport: {
-      airportCode: 102,
-      airportName: "Chhatrapati Shivaji International Airport",
-      airportLocation: "Mumbai"
-    },
-    arrivalTime: 1668524400000,
-    departureTime: 1668510000000
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showBySourceInXml" doc:id="1c1de874-f111-4833-a7b3-53b9009afb4e" name="showBySourceInXml"/>
     </flow>
     <flow name="get:\api\passenger\showPassengersInXml:flight-management-api-config">
         <ee:transform>
@@ -967,38 +891,6 @@ output application/json
         </ee:transform>
     </flow>
     <flow name="get:\api\user\showUsersInXml:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-[
-  {
-    userType: "Admin",
-    userId: 45,
-    userName: "Rohit",
-    userPassword: "Rohit@45",
-    userPhone: 676,
-    email: "rohitsharma@gmail.com"
-  }, 
-  {
-    userType: "User",
-    userId: 18,
-    userName: "Virat",
-    userPassword: "Virat@18",
-    userPhone: 8282,
-    email: "virat18@gmail.com"
-  }, 
-  {
-    userType: "Admin",
-    userId: 63,
-    userName: "Sky",
-    userPassword: "Sky@63",
-    userPhone: 67872,
-    email: "sky63@gmail.com"
-  }
-]]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="showAllUsersInXml" doc:id="b7e5d900-4407-4da6-b381-a2e5a1cdb2e0" name="showAllUsersInXml"/>
     </flow>
 </mule>
