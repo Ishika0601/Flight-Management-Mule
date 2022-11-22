@@ -71,6 +71,18 @@ output application/json
 						</ee:message>
 					</ee:transform>
 				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="8977856c-b88d-43c9-9279-289b4f49984d" type="HTTP:INTERNAL_SERVER_ERROR" >
+					<ee:transform doc:name="Transform Message" doc:id="4a810ac8-0c93-4381-bbff-913080fa9f16" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Invalid data given for patch."
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
 			</error-handler>
 		</try>
 	</sub-flow>
@@ -127,7 +139,7 @@ output application/json
 output application/json
 ---
 {
-	"message": "Number of passengers are invalid."
+	"message": "Invalid data given for patch."
 }]]></ee:set-payload>
 						</ee:message>
 					</ee:transform>
