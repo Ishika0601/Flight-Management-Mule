@@ -6,6 +6,36 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="showAllUsersInXml" doc:id="9ba72bc2-58d0-4830-aa5e-18ef3b5df78f" >
+		<http:request method="GET" doc:name="Request" doc:id="b04a0d39-ddf9-43f9-902b-5003b47a69bd" path="/user/showAllUsers" config-ref="HTTP_Request_configuration"/>
+		<ee:transform doc:name="Transform Message" doc:id="d2aa2516-04ac-4509-84dd-8b66da92c91e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+airports: {noOfUsers: sizeOf(payload),
+	(payload map (object, index) ->
+	{
+		user: {
+			id: object.UserID,
+			userType: object.userType,
+			userName: object.userName,
+			email: object.email,
+			userPassword: object.userPassword,
+			userPhone: object.userPhone
+			
+		}
+	}
+)
+}
+]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable resource="userDWoutput.dwl" variableName="userDWoutput" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="8f76a7e1-6fd8-4dbd-a8c8-9b1e1537bf62" message="#[vars.userDWoutput]"/>
+	</sub-flow>
 	<sub-flow name="showAllUsers" doc:id="a95cd10b-9cf1-4efe-9768-0f0c438dbcf3" >
 		<http:request method="GET" doc:name="showAllUsers" doc:id="53df6da1-18e3-4090-822c-9842f6bf9ca6" config-ref="HTTP_Request_configuration" path="/user/showAllUsers"/>
 	</sub-flow>
