@@ -420,7 +420,7 @@ output application/json
 		luggage: $.luggage
 	},
 	
-	"ticketCost": 0,
+	"ticketCost": attributes.queryParams.noOfPassengers*6000 default 0,
 	"flight":
 	{
 	"sfid" : attributes.queryParams.sfid,
