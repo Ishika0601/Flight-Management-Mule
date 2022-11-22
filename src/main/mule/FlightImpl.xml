@@ -28,13 +28,14 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<sub-flow name="showByCarrierName" doc:id="56b149b1-0f28-455c-8554-2937570b633d" >
 		<try doc:name="Try" doc:id="e78573e3-a8d2-4b2b-bc92-e157f90c9a46" >
 			<set-variable value="#[vars.carrierName]" doc:name="Set Variable" doc:id="eede9b1b-d9d6-4345-801b-93f47af864c0" variableName="data" />
-			<validation:is-not-blank-string doc:name="Is not blank string" doc:id="29b5313b-7443-4901-a87d-386f30c64bd4" value="#[vars.carrierName]"/>
-			<http:request method="GET" doc:name="showByCarrierName" doc:id="3f5c45cf-57f8-4496-872b-15feb32dd7d0" config-ref="HTTP_Request_configuration" path="/flight/showByCarrierName/{CarrierName}">
-			<error-mapping sourceType="HTTP:NOT_FOUND" targetType="FLIGHT:NOT FOUND" />
+			<validation:is-not-blank-string doc:name="Is not blank string" doc:id="29b5313b-7443-4901-a87d-386f30c64bd4" value="#[vars.carrierName]">
+			</validation:is-not-blank-string>
+			<http:request method="GET" doc:name="showByCarrierName" doc:id="3f5c45cf-57f8-4496-872b-15feb32dd7d0" config-ref="HTTP_Request_configuration" path="/flight/showByCarrierName/{carrierName}">
+			<error-mapping sourceType="HTTP:NOT_FOUND" targetType="FLIGHT:NOT_FOUND" />
 				<http:uri-params ><![CDATA[#[output application/java
 ---
 {
-	"CarrierName" : vars.carrierName
+	"carrierName" : vars.carrierName
 }]]]></http:uri-params>
 		</http:request>
 			<error-handler >
