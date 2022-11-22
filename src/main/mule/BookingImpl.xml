@@ -78,7 +78,7 @@ output application/json
 output application/json
 ---
 {
-	"message": "Invalid data given for patch."
+	"message": "Invalid data given for addBooking."
 }]]></ee:set-payload>
 						</ee:message>
 					</ee:transform>
