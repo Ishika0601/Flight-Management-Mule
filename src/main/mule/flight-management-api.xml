@@ -658,18 +658,6 @@ output application/json
     <flow name="post:\api\flights\addFlight:application\json:flight-management-api-config">
         <flow-ref doc:name="addFlight" doc:id="8215b9f6-264c-4195-9ced-e97021a809cc" name="addFlight" />
     </flow>
-    <flow name="post:\api\passenger\addPassenger:application\json:flight-management-api-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "Passenger added"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
     <flow name="post:\api\scheduledflight\addSchFlight:application\json:flight-management-api-config">
         <flow-ref doc:name="addSchFlight" doc:id="218f2083-a3f8-485a-8581-389efd1669a0" name="addSchFlight" />
     </flow>

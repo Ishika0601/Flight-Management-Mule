@@ -1,9 +1,0 @@
-%dw 2.0
-
-type auto_5178b79b_5122_4b54_8bb5_550292d4db8d_Output_Payload = {
-  airportName: String, 
-  airportLocation: String, 
-  airportCode?: Number, 
-  _?: Any
-}
-
