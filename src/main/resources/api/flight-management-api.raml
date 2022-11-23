@@ -28,7 +28,6 @@ types:
             body:
               application/xml:
                 type: Airport[]
-                example: !include Examples/AirportGetAllExample.raml
 
     /addAirport:
       post:
@@ -291,7 +290,6 @@ types:
             body:
               application/xml:
                 type: Schedule[]
-                example: !include Examples/ScheduleGetAllExample.raml
           400:
             body:
               application/json:
@@ -305,7 +303,6 @@ types:
             body:
               application/xml:
                 type: Schedule[]
-                example: !include Examples/ScheduleGetAllExample.raml
           400:
             body:
               application/json:
@@ -329,7 +326,6 @@ types:
             body:
               application/xml:
                 type: Passenger[]
-                example: !include Examples/PassengerGetAllExample.raml
 
     /addPassenger/{bookingId}:
       post:
@@ -442,15 +438,34 @@ types:
                   message: Passenger not found
 
   /user:
+    /loginUser:
+      get:
+        queryParameters:
+          userName:
+            required: true
+          userPassword:
+            required: true
+        responses:
+          200:
+            body:
+              application/json:
+                example:
+                  message: Welcome user
+          500:
+            body:
+              application/json:
+                example:
+                  message: Invalid username or password
+
     /showAllUsers:
       get:
         description: User details
         queryParameters:
-          type:
-            required: false
+          userType:
+            required: true
             enum:
               - Admin
-              - User
+              - Customer
         responses:
           200:
             body:
@@ -462,17 +477,16 @@ types:
       get:
         description: User details
         queryParameters:
-          type:
-            required: false
+          userType:
+            required: true
             enum:
               - Admin
-              - User
+              - Customer
         responses:
           200:
             body:
               application/xml:
                 type: User[]
-                example: !include Examples/UserGetAllExample.raml
 
     /addUser:            
       post:
@@ -695,7 +709,6 @@ types:
             body:
               application/xml:
                 type: ScheduledFlight[]
-                example: !include Examples/ScheduledFlightsGetAllExample.raml
           400:
             body:
               application/json:
@@ -762,7 +775,6 @@ types:
             body:
               application/xml:
                 type: Booking[]
-                example: !include Examples/BookingGetAllExample.raml
           400:
             body:
               application/json:
@@ -933,7 +945,6 @@ types:
             body:
               application/xml:
                 type: Flight[]
-                example: !include Examples/FlightGetAllExample.raml
           400:
             body:
               application/json:

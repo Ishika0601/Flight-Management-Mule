@@ -7,7 +7,13 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<sub-flow name="showAllUsersInXml" doc:id="9ba72bc2-58d0-4830-aa5e-18ef3b5df78f" >
-		<http:request method="GET" doc:name="Request" doc:id="b04a0d39-ddf9-43f9-902b-5003b47a69bd" path="/user/showAllUsers" config-ref="HTTP_Request_configuration"/>
+		<http:request method="GET" doc:name="Request" doc:id="b04a0d39-ddf9-43f9-902b-5003b47a69bd" path="/user/showAllUsers" config-ref="HTTP_Request_configuration">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"userType" : attributes.queryParams.userType
+}]]]></http:query-params>
+		</http:request>
 		<ee:transform doc:name="Transform Message" doc:id="d2aa2516-04ac-4509-84dd-8b66da92c91e" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -37,7 +43,39 @@ airports: {noOfUsers: sizeOf(payload),
 		<logger level="INFO" doc:name="Logger" doc:id="8f76a7e1-6fd8-4dbd-a8c8-9b1e1537bf62" message="#[vars.userDWoutput]"/>
 	</sub-flow>
 	<sub-flow name="showAllUsers" doc:id="a95cd10b-9cf1-4efe-9768-0f0c438dbcf3" >
-		<http:request method="GET" doc:name="showAllUsers" doc:id="53df6da1-18e3-4090-822c-9842f6bf9ca6" config-ref="HTTP_Request_configuration" path="/user/showAllUsers"/>
+		<http:request method="GET" doc:name="showAllUsers" doc:id="53df6da1-18e3-4090-822c-9842f6bf9ca6" config-ref="HTTP_Request_configuration" path="/user/showAllUsers">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"userType" : attributes.queryParams.userType
+}]]]></http:query-params>
+		</http:request>
+	</sub-flow>
+	<sub-flow name="loginUser" doc:id="4d593156-f731-42ff-84cb-458b15c93a1a" >
+		<try doc:name="Try" doc:id="09451652-819f-4ddf-b660-e5bfaf09a0fa" >
+			<http:request method="GET" doc:name="loginUser" doc:id="21b8c8e9-75e2-479a-a420-da7f384a5827" config-ref="HTTP_Request_configuration" path="/user/loginUser">
+			<http:query-params><![CDATA[#[output application/java
+---
+{
+	"userPassword" : attributes.queryParams.userPassword,
+	"userName" : attributes.queryParams.userName
+}]]]></http:query-params>
+		</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e7c52e84-ea48-49c1-8b01-0c4a573723f1" type="HTTP:INTERNAL_SERVER_ERROR">
+					<ee:transform doc:name="Transform Message" doc:id="67f86940-0c9a-4ec3-bef7-1401f1a1e114" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Invalid username or password"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
 	</sub-flow>
 	<sub-flow name="showById" doc:id="a6795c88-8b3f-4e9f-8e2e-848d27a81a26" >
 		<try doc:name="Try" doc:id="ffc18d72-84b0-4efc-ad15-161d09b3d03d" >
@@ -170,6 +208,7 @@ output application/json
 		<try doc:name="Try" doc:id="8881817a-b11e-4df8-8c42-17a2639d1a9e" >
 			<validation:is-not-blank-string doc:name="Name not blank string" doc:id="bea50b17-4e51-470b-95e0-b7e3a422f576" value="#[payload.userName]" />
 			<validation:is-not-blank-string doc:name="UserType not blank string" doc:id="344ddcf3-7cac-436a-8460-b999fc35ef8e" value="#[payload.userType]" />
+			<validation:is-true doc:name="Type Is admin or customer" doc:id="3302fa37-8d6c-47fc-bfa4-091a9ea9c09f" expression="#[payload.userType=='Admin' or payload.userType=='Customer']"/>
 			<validation:is-not-blank-string doc:name="Password not blank string" doc:id="c5a8cc9c-dd42-4ace-80a3-3b933f67913a" value="#[payload.userPassword]" />
 			<validation:is-not-blank-string doc:name="email not blank string" doc:id="c998f9df-61d5-4d08-9a2e-d93affdb4c2f" value="#[payload.email]" />
 			<validation:is-email doc:name="Is email" doc:id="dc996329-fd23-4c33-80fd-e1d06ba7f368" email="#[payload.email]" />
@@ -207,6 +246,18 @@ output application/json
 ---
 {
 	"message": "PhoneNo must be 10 digits"
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e86250b6-b45d-448a-b660-0b3228760f06" type="VALIDATION:INVALID_BOOLEAN">
+					<ee:transform doc:name="Transform Message" doc:id="130773b8-de08-4bd4-a871-8358ff0d16c8" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "User type should be Admin or Customer"
 }]]></ee:set-payload>
 						</ee:message>
 					</ee:transform>
