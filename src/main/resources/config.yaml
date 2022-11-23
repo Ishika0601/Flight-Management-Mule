@@ -3,4 +3,4 @@ http:
 
 sprint:
   host: "localhost"
-  port: "9001"
+  port: "8082"
