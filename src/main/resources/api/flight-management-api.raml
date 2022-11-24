@@ -319,14 +319,6 @@ types:
                 type: Passenger[]
                 example: !include Examples/PassengerGetAllExample.raml
 
-    /showPassengersInXml:
-      get:
-        responses:
-          200:
-            body:
-              application/xml:
-                type: Passenger[]
-
     /addPassenger/{bookingId}:
       post:
         body:
@@ -436,6 +428,23 @@ types:
               application/json:
                 example:
                   message: Passenger not found
+
+    /showByBookingId/{bookingId}:
+      get:
+        responses:
+          200:
+            body:
+              application/json:
+                type: Passenger[]
+                example: !include Examples/PassengerGetAllExample.raml
+
+    /showByBookingInXml/{bookingId}:
+      get:
+        responses:
+          200:
+            body:
+              application/xml:
+                type: Passenger[]
 
   /user:
     /loginUser:
@@ -759,14 +768,14 @@ types:
           200:
             body:
               application/json:
-                type: Booking[]
-                example: !include Examples/BookingGetAllExample.raml
+                type: Passenger[]
+                example: !include Examples/PassengerGetAllExample.raml
 
           400:
             body:
               application/json:
                 example:
-                  message: Booking not found
+                  message: Passenger not found
 
     /showBySfidInXml/{sfid}:
       get:
@@ -774,12 +783,12 @@ types:
           200:
             body:
               application/xml:
-                type: Booking[]
+                type: Passenger[]
           400:
             body:
               application/json:
                 example:
-                  message: Booking not found
+                  message: Passenger not found
 
     /modifyBooking/{bookingId}:
       put:

@@ -6,35 +6,6 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<sub-flow name="showAllPassengerInXml" doc:id="a27f8827-c2be-403d-9c50-613ba6787cb3">
-		<http:request method="GET" doc:name="Request" doc:id="ec39ac7c-94d0-4ad4-87d9-0302aaeb24d3" config-ref="HTTP_Request_configuration" path="/passenger/showAllPassengers" />
-		<ee:transform doc:name="Transform Message" doc:id="2a380ced-7d55-4e3c-baec-fac59416fb60">
-			<ee:message>
-				<ee:set-payload><![CDATA[%dw 2.0
-output application/xml
----
-passengers: {noOfPassengers: sizeOf(payload),
-	(payload map (object, index) ->
-	{
-		passenger: {
-			pnr: object.pnrNumber,
-			name: object.passengerName,
-			age: object.passengerAge,
-			uin: object.passengerUIN,
-			luggage: object.luggage
-			
-		}
-	}
-)
-}
-]]></ee:set-payload>
-			</ee:message>
-			<ee:variables>
-				<ee:set-variable resource="passengerDWoutput.dwl" variableName="passengerDWoutput" />
-			</ee:variables>
-		</ee:transform>
-		<logger level="INFO" doc:name="Logger" doc:id="22dcaaa3-c3bb-4398-b74e-0c896416dba8" message="#[vars.passengerDWoutput]" />
-	</sub-flow>
 	<sub-flow name="showAllPassenger" doc:id="dbd764be-f78f-4297-a15e-8b72d183f274" >
 		<http:request method="GET" doc:name="showAllPassengers" doc:id="ab3f696e-f54e-4249-83e5-60b63965f4c1" config-ref="HTTP_Request_configuration" path="/passenger/showAllPassengers"/>
 	</sub-flow>
@@ -109,6 +80,83 @@ output application/json
 				</on-error-propagate>
 			</error-handler>
 		</try>
+	</sub-flow>
+	<sub-flow name="showByBookingId" doc:id="a82f6641-7162-43c7-ae4c-e650a1bb42a5" >
+		<try doc:name="Try" doc:id="5fecb573-9759-4a13-81b4-08d34416a8c1" >
+			<validation:is-number numberType="LONG" doc:name="Booking id Is number" doc:id="4eef8d66-d0f3-44f6-bdfa-80a4dc891e4d" value="#[vars.bookingId]"/>
+			<http:request method="GET" doc:name="showByBookingId" doc:id="596121eb-89c7-4760-bc2a-b8ab9b9e3557" config-ref="HTTP_Request_configuration" path="/passenger/showByBookingId/{id}">
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"id" : vars.bookingId
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fe32efb7-5262-4ab1-92ea-95814fb4bb6f" type="HTTP:NOT_FOUND">
+					<ee:transform doc:name="Transform Message" doc:id="68543e7f-b075-4b63-94bb-b29ff042d60a" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No booking found with id " ++ vars.bookingId as String
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+	</sub-flow>
+	<sub-flow name="showByBookingIdInXml" doc:id="40663812-1c83-424e-8b73-bf180e8435d4" >
+		<try doc:name="Try" doc:id="89ee7dc0-29cf-41cb-b526-5b25697ece62" >
+			<validation:is-number numberType="LONG" doc:name="Booking id Is number" doc:id="18168a0d-8024-4d20-9e92-aaf472bff15c" value="#[vars.bookingId]" />
+			<http:request method="GET" doc:name="showByBookingId" doc:id="b8df8423-fb90-408f-9344-79d0a3820aa0" config-ref="HTTP_Request_configuration" path="/passenger/showByBookingId/{id}" >
+				<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"id" : vars.bookingId
+}]]]></http:uri-params>
+			</http:request>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="819dcf88-dd8e-4b89-bf2c-9d8aa0bf306f" type="HTTP:NOT_FOUND" >
+					<ee:transform doc:name="Transform Message" doc:id="93f50b76-6f9c-4fa5-b88d-6c5a9b26ae84" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "No booking found with id " ++ vars.bookingId as String
+}]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="455b6266-e094-4947-9b67-36277f35de41">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+passengers: {noOfPassengers: sizeOf(payload),
+	(payload map (object, index) ->
+	{
+		passenger: {
+			pnr: object.pnrNumber,
+			name: object.passengerName,
+			age: object.passengerAge,
+			uin: object.passengerUIN,
+			luggage: object.luggage
+			
+		}
+	}
+)
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable resource="passengerDWOutput.dwl" variableName="passengerDWOutput" />
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="38515f49-b13b-45f8-871b-2fbd3ba353ac" message="#[vars.passengerDWOutput]" />
 	</sub-flow>
 	<sub-flow name="addPassenger" doc:id="2559b910-639c-43c4-9066-5645678d3432" >
 		<try doc:name="Try" doc:id="2f58d020-3819-487b-8f8a-8b48a9800226" >
