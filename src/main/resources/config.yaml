@@ -2,5 +2,4 @@ http:
   port: "8081"
 
 sprint:
-  host: "localhost"
-  port: "8082"
+  host: "9037-122-161-48-38.in.ngrok.io"

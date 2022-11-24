@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	</http:listener-config>
 	<configuration-properties doc:name="Configuration properties" doc:id="7ef964cb-ebc5-4dc8-984b-5be32ed2f14f" file="config.yaml" />
 	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="55a0df2a-cd8c-446f-8ded-cb410ccdb63d">
-		<http:request-connection host="${sprint.host}" port="${sprint.port}" />
+		<http:request-connection host="${sprint.host}" protocol="HTTPS"/>
 	</http:request-config>
 	<configuration doc:name="Configuration" doc:id="0bda68d1-889d-469d-b8db-94222e069765" defaultErrorHandler-ref="globalError_Handler" />
 	<error-handler name="globalError_Handler" doc:id="7b2bc3fd-9b6e-42c0-b86b-81c5801c02de" >
